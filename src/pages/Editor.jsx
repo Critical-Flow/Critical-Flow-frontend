@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Editor.css';
+import MilkdownEditor from '../components/MilkdownEditor';
 
 const INITIAL_MD = `# DFS와 BFS 정리
 
@@ -205,11 +206,7 @@ export default function Editor() {
 
       <div className={wsClass}>
         <div className="editor-area">
-          <textarea
-            spellCheck={false}
-            value={md}
-            onChange={(e) => setMd(e.target.value)}
-          />
+          <MilkdownEditor value={md} onChange={setMd} />
         </div>
         <div className="preview-area">
           <h1>DFS와 BFS 정리</h1>

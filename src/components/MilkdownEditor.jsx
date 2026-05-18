@@ -1,12 +1,20 @@
-import { useEffect, useRef } from 'react';
-import { Editor, rootCtx, defaultValueCtx } from '@milkdown/core';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { Editor, rootCtx, defaultValueCtx, commandsCtx } from '@milkdown/core';
 import { commonmark } from '@milkdown/preset-commonmark';
 import './MilkdownEditor.css';
 
-export default function MilkdownEditor({ value, onChange }) {
+const MilkdownEditor = forwardRef(function MilkdownEditor({ value, onChange }, ref) {
   const containerRef = useRef(null);
   const editorRef = useRef(null);
   const initialValue = useRef(value);
+
+  useImperativeHandle(ref, () => ({
+    callCommand(command, payload) {
+      editorRef.current?.action((ctx) => {
+        ctx.get(commandsCtx).call(command.key, payload);
+      });
+    },
+  }));
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -36,4 +44,6 @@ export default function MilkdownEditor({ value, onChange }) {
   }, []);
 
   return <div className="milkdown-wrapper" ref={containerRef} />;
-}
+});
+
+export default MilkdownEditor;

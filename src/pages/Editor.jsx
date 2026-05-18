@@ -2,6 +2,18 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
+import {
+  toggleStrongCommand,
+  toggleEmphasisCommand,
+  wrapInHeadingCommand,
+  wrapInBlockquoteCommand,
+  wrapInBulletListCommand,
+  wrapInOrderedListCommand,
+  toggleLinkCommand,
+  insertImageCommand,
+  toggleInlineCodeCommand,
+  createCodeBlockCommand,
+} from '@milkdown/preset-commonmark';
 
 const INITIAL_MD = `# DFS와 BFS 정리
 
@@ -37,6 +49,11 @@ export default function Editor() {
   const [md, setMd] = useState(INITIAL_MD);
   const [rsideMode, setRsideMode] = useState('tutor');
   const resizingRef = useRef(false);
+  const milkdownRef = useRef(null);
+
+  const cmd = (command, payload) => {
+    milkdownRef.current?.callCommand(command, payload);
+  };
 
   useEffect(() => {
     const onMouseMove = (e) => {
@@ -93,22 +110,22 @@ export default function Editor() {
       </div>
 
       <div className="toolbar">
-        <button title="굵게"><b>B</b></button>
-        <button title="기울임"><i>I</i></button>
-        <button title="취소선"><s>S</s></button>
+        <button title="굵게" onClick={() => cmd(toggleStrongCommand)}><b>B</b></button>
+        <button title="기울임" onClick={() => cmd(toggleEmphasisCommand)}><i>I</i></button>
+        <button title="취소선" disabled><s>S</s></button>
         <span className="div" />
-        <button title="제목 1">H1</button>
-        <button title="제목 2">H2</button>
-        <button title="인용">❝</button>
+        <button title="제목 1" onClick={() => cmd(wrapInHeadingCommand, 1)}>H1</button>
+        <button title="제목 2" onClick={() => cmd(wrapInHeadingCommand, 2)}>H2</button>
+        <button title="인용" onClick={() => cmd(wrapInBlockquoteCommand)}>❝</button>
         <span className="div" />
-        <button title="목록">• 목록</button>
-        <button title="번호 목록">1.</button>
-        <button title="체크박스">☐</button>
+        <button title="목록" onClick={() => cmd(wrapInBulletListCommand)}>• 목록</button>
+        <button title="번호 목록" onClick={() => cmd(wrapInOrderedListCommand)}>1.</button>
+        <button title="체크박스" disabled>☐</button>
         <span className="div" />
-        <button title="링크">🔗</button>
-        <button title="이미지">🖼</button>
-        <button title="코드">{'{ }'}</button>
-        <span className="label">마크다운 툴바</span>
+        <button title="링크" onClick={() => cmd(toggleLinkCommand)}>🔗</button>
+        <button title="이미지" onClick={() => cmd(insertImageCommand)}>🖼</button>
+        <button title="인라인 코드" onClick={() => cmd(toggleInlineCodeCommand)}>{'< >'}</button>
+        <button title="코드 블록" onClick={() => cmd(createCodeBlockCommand)}>{'{ }'}</button>
       </div>
 
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
@@ -216,7 +233,7 @@ export default function Editor() {
               onChange={(e) => setMd(e.target.value)}
             />
           ) : (
-            <MilkdownEditor key={remountKey} value={md} onChange={setMd} />
+            <MilkdownEditor key={remountKey} ref={milkdownRef} value={md} onChange={setMd} />
           )}
         </div>
       </div>

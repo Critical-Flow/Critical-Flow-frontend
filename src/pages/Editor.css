@@ -103,9 +103,14 @@
   min-width: 32px;
 }
 
-.toolbar button:hover {
+.toolbar button:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.2);
   opacity: 1;
+}
+
+.toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .toolbar .div {
@@ -115,13 +120,6 @@
   margin: 0 4px;
 }
 
-.toolbar .label {
-  margin-left: auto;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
 
 /* 본문 */
 .workspace {

@@ -156,7 +156,7 @@
   display: none;
 }
 
-.editor-area textarea {
+.editor-area .raw-textarea {
   width: 100%;
   height: 100%;
   border: none;
@@ -170,63 +170,10 @@
   scrollbar-width: none;
 }
 
-.editor-area textarea::-webkit-scrollbar {
+.editor-area .raw-textarea::-webkit-scrollbar {
   display: none;
 }
 
-.preview-area {
-  display: none;
-  background: #f3f3f3;
-  border-left: 1px solid #c4c4c4;
-}
-
-.app.preview .editor-area { display: none; }
-.app.preview .preview-area { display: block; flex: 1; }
-.app.split .preview-area { display: block; border-left: 1px solid #c4c4c4; background: #f3f3f3; }
-
-.preview-area h1 {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 14px;
-  border-bottom: 1px solid #cfcfcf;
-  padding-bottom: 10px;
-}
-
-.preview-area h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 20px 0 10px;
-}
-
-.preview-area p {
-  margin: 10px 0;
-  color: #374151;
-}
-
-.preview-area code {
-  background: #C5EEE0;
-  color: var(--color-teal-500);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.preview-area pre {
-  background: #1f2937;
-  color: #e5e7eb;
-  padding: 16px;
-  border-radius: 10px;
-  overflow: auto;
-  font-size: 13px;
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1.6;
-  margin: 14px 0;
-}
-
-.preview-area ul {
-  margin: 10px 0 10px 22px;
-}
 
 /* 좌/우 사이드바 */
 .lside,

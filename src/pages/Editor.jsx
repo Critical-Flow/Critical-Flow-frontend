@@ -32,7 +32,8 @@ def dfs(graph, v, visited):
 export default function Editor() {
   const [lsideOpen, setLsideOpen] = useState(false);
   const [rsideOpen, setRsideOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('edit');
+  const [viewMode, setViewMode] = useState('wysiwyg');
+  const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState(INITIAL_MD);
   const [rsideMode, setRsideMode] = useState('tutor');
   const resizingRef = useRef(false);
@@ -58,11 +59,12 @@ export default function Editor() {
   }, []);
 
   const cycleView = () => {
-    setViewMode((prev) => {
-      if (prev === 'edit') return 'preview';
-      if (prev === 'preview') return 'split';
-      return 'edit';
-    });
+    if (viewMode === 'wysiwyg') {
+      setViewMode('raw');
+    } else {
+      setRemountKey((k) => k + 1);
+      setViewMode('wysiwyg');
+    }
   };
 
   const handleSave = () => {
@@ -71,7 +73,7 @@ export default function Editor() {
     setTimeout(() => alert('💾 저장되었습니다'), 150);
   };
 
-  const appClass = ['app', lsideOpen && 'l-open', rsideOpen && 'r-open', viewMode !== 'edit' && viewMode]
+  const appClass = ['app', lsideOpen && 'l-open', rsideOpen && 'r-open']
     .filter(Boolean).join(' ');
   const wsClass = ['workspace', lsideOpen && 'l-open', rsideOpen && 'r-open']
     .filter(Boolean).join(' ');
@@ -206,25 +208,16 @@ export default function Editor() {
 
       <div className={wsClass}>
         <div className="editor-area">
-          <MilkdownEditor value={md} onChange={setMd} />
-        </div>
-        <div className="preview-area">
-          <h1>DFS와 BFS 정리</h1>
-          <p>그래프 탐색의 두 가지 기본 알고리즘.</p>
-          <h2>DFS (깊이 우선 탐색)</h2>
-          <p>스택 또는 재귀로 구현한다. 한 경로를 끝까지 파고든 뒤 되돌아온다.</p>
-          <pre><code>{`def dfs(graph, v, visited):
-    visited[v] = True
-    for u in graph[v]:
-        if not visited[u]:
-            dfs(graph, u, visited)`}</code></pre>
-          <h2>BFS (너비 우선 탐색)</h2>
-          <p>큐를 사용해 가까운 노드부터 방문한다. <strong>최단 경로</strong>(간선 가중치 동일) 탐색에 적합.</p>
-          <h2>시간복잡도 비교</h2>
-          <ul>
-            <li>시간복잡도: <code>O(V + E)</code></li>
-            <li>공간복잡도: <code>O(V)</code></li>
-          </ul>
+          {viewMode === 'raw' ? (
+            <textarea
+              className="raw-textarea"
+              spellCheck={false}
+              value={md}
+              onChange={(e) => setMd(e.target.value)}
+            />
+          ) : (
+            <MilkdownEditor key={remountKey} value={md} onChange={setMd} />
+          )}
         </div>
       </div>
 
@@ -240,10 +233,10 @@ export default function Editor() {
           title="R 사이드바"
         ><span className="tip">R 사이드바</span></button>
         <button
-          className={viewMode !== 'edit' ? 'on' : ''}
+          className={viewMode === 'raw' ? 'on' : ''}
           onClick={cycleView}
-          title="편집/미리보기"
-        ><span className="tip">편집 ↔ 미리보기</span></button>
+          title="원본 마크다운 보기"
+        ><span className="tip">원본 마크다운 보기</span></button>
         <button onClick={handleSave} title="저장">
           <span className="tip">저장 / 전송</span>
         </button>

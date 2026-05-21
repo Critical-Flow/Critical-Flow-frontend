@@ -30,14 +30,22 @@
   font-size: 14.5px;
   color: var(--color-teal-500);
   font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .path .dir {
   color: var(--color-teal-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .path .sep {
   color: var(--color-teal-500);
+  flex-shrink: 0;
 }
 
 .path input {
@@ -49,7 +57,9 @@
   outline: none;
   padding: 2px 4px;
   font-weight: 700;
-  min-width: 120px;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 80px;
 }
 
 .path input:hover {
@@ -63,12 +73,16 @@
 
 .path .ext {
   color: var(--color-teal-500);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .back {
   font-size: 14px;
   color: var(--color-teal-500);
   font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .back:hover {

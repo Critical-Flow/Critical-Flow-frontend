@@ -1,6 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Editor.css';
+import MilkdownEditor from '../components/MilkdownEditor';
+import {
+  toggleStrongCommand,
+  toggleEmphasisCommand,
+  wrapInHeadingCommand,
+  wrapInBlockquoteCommand,
+  wrapInBulletListCommand,
+  wrapInOrderedListCommand,
+  toggleLinkCommand,
+  insertImageCommand,
+  toggleInlineCodeCommand,
+  createCodeBlockCommand,
+} from '@milkdown/preset-commonmark';
 
 const INITIAL_MD = `# DFS와 BFS 정리
 
@@ -31,10 +44,18 @@ def dfs(graph, v, visited):
 export default function Editor() {
   const [lsideOpen, setLsideOpen] = useState(false);
   const [rsideOpen, setRsideOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('edit');
+  const [viewMode, setViewMode] = useState('wysiwyg');
+  const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState(INITIAL_MD);
   const [rsideMode, setRsideMode] = useState('tutor');
+  const [isSaved, setIsSaved] = useState(false);
+  const [isLearning, setIsLearning] = useState(false);
   const resizingRef = useRef(false);
+  const milkdownRef = useRef(null);
+
+  const cmd = (command, payload) => {
+    milkdownRef.current?.callCommand(command, payload);
+  };
 
   useEffect(() => {
     const onMouseMove = (e) => {
@@ -57,20 +78,22 @@ export default function Editor() {
   }, []);
 
   const cycleView = () => {
-    setViewMode((prev) => {
-      if (prev === 'edit') return 'preview';
-      if (prev === 'preview') return 'split';
-      return 'edit';
-    });
+    if (viewMode === 'wysiwyg') {
+      setViewMode('raw');
+    } else {
+      setRemountKey((k) => k + 1);
+      setViewMode('wysiwyg');
+    }
   };
 
   const handleSave = () => {
     if (lsideOpen) setLsideOpen(false);
     setRsideOpen(true);
+    setIsSaved(true);
     setTimeout(() => alert('💾 저장되었습니다'), 150);
   };
 
-  const appClass = ['app', lsideOpen && 'l-open', rsideOpen && 'r-open', viewMode !== 'edit' && viewMode]
+  const appClass = ['app', lsideOpen && 'l-open', rsideOpen && 'r-open']
     .filter(Boolean).join(' ');
   const wsClass = ['workspace', lsideOpen && 'l-open', rsideOpen && 'r-open']
     .filter(Boolean).join(' ');
@@ -90,22 +113,22 @@ export default function Editor() {
       </div>
 
       <div className="toolbar">
-        <button title="굵게"><b>B</b></button>
-        <button title="기울임"><i>I</i></button>
-        <button title="취소선"><s>S</s></button>
+        <button title="굵게" onClick={() => cmd(toggleStrongCommand)}><b>B</b></button>
+        <button title="기울임" onClick={() => cmd(toggleEmphasisCommand)}><i>I</i></button>
+        <button title="취소선" disabled><s>S</s></button>
         <span className="div" />
-        <button title="제목 1">H1</button>
-        <button title="제목 2">H2</button>
-        <button title="인용">❝</button>
+        <button title="제목 1" onClick={() => cmd(wrapInHeadingCommand, 1)}>H1</button>
+        <button title="제목 2" onClick={() => cmd(wrapInHeadingCommand, 2)}>H2</button>
+        <button title="인용" onClick={() => cmd(wrapInBlockquoteCommand)}>❝</button>
         <span className="div" />
-        <button title="목록">• 목록</button>
-        <button title="번호 목록">1.</button>
-        <button title="체크박스">☐</button>
+        <button title="목록" onClick={() => cmd(wrapInBulletListCommand)}>• 목록</button>
+        <button title="번호 목록" onClick={() => cmd(wrapInOrderedListCommand)}>1.</button>
+        <button title="체크박스" disabled>☐</button>
         <span className="div" />
-        <button title="링크">🔗</button>
-        <button title="이미지">🖼</button>
-        <button title="코드">{'{ }'}</button>
-        <span className="label">마크다운 툴바</span>
+        <button title="링크" onClick={() => cmd(toggleLinkCommand)}>🔗</button>
+        <button title="이미지" onClick={() => cmd(insertImageCommand)}>🖼</button>
+        <button title="인라인 코드" onClick={() => cmd(toggleInlineCodeCommand)}>{'< >'}</button>
+        <button title="코드 블록" onClick={() => cmd(createCodeBlockCommand)}>{'{ }'}</button>
       </div>
 
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
@@ -205,29 +228,16 @@ export default function Editor() {
 
       <div className={wsClass}>
         <div className="editor-area">
-          <textarea
-            spellCheck={false}
-            value={md}
-            onChange={(e) => setMd(e.target.value)}
-          />
-        </div>
-        <div className="preview-area">
-          <h1>DFS와 BFS 정리</h1>
-          <p>그래프 탐색의 두 가지 기본 알고리즘.</p>
-          <h2>DFS (깊이 우선 탐색)</h2>
-          <p>스택 또는 재귀로 구현한다. 한 경로를 끝까지 파고든 뒤 되돌아온다.</p>
-          <pre><code>{`def dfs(graph, v, visited):
-    visited[v] = True
-    for u in graph[v]:
-        if not visited[u]:
-            dfs(graph, u, visited)`}</code></pre>
-          <h2>BFS (너비 우선 탐색)</h2>
-          <p>큐를 사용해 가까운 노드부터 방문한다. <strong>최단 경로</strong>(간선 가중치 동일) 탐색에 적합.</p>
-          <h2>시간복잡도 비교</h2>
-          <ul>
-            <li>시간복잡도: <code>O(V + E)</code></li>
-            <li>공간복잡도: <code>O(V)</code></li>
-          </ul>
+          {viewMode === 'raw' ? (
+            <textarea
+              className="raw-textarea"
+              spellCheck={false}
+              value={md}
+              onChange={(e) => setMd(e.target.value)}
+            />
+          ) : (
+            <MilkdownEditor key={remountKey} ref={milkdownRef} value={md} onChange={setMd} />
+          )}
         </div>
       </div>
 
@@ -236,19 +246,28 @@ export default function Editor() {
           className={lsideOpen ? 'on' : ''}
           onClick={() => setLsideOpen((v) => !v)}
           title="L 사이드바"
-        ><span className="tip">L 사이드바</span></button>
+        ><span className="dock-icon">☰</span><span className="tip">L 사이드바</span></button>
         <button
           className={rsideOpen ? 'on' : ''}
           onClick={() => setRsideOpen((v) => !v)}
           title="R 사이드바"
-        ><span className="tip">R 사이드바</span></button>
+          disabled={!isSaved}
+        ><span className="dock-icon">🤖</span><span className="tip">R 사이드바</span></button>
         <button
-          className={viewMode !== 'edit' ? 'on' : ''}
+          className={viewMode === 'raw' ? 'on' : ''}
           onClick={cycleView}
-          title="편집/미리보기"
-        ><span className="tip">편집 ↔ 미리보기</span></button>
+          title="원본 마크다운 보기"
+        ><span className="dock-icon dock-icon--code">&lt;/&gt;</span><span className="tip">원본 마크다운 보기</span></button>
         <button onClick={handleSave} title="저장">
-          <span className="tip">저장 / 전송</span>
+          <span className="dock-icon">💾</span><span className="tip">저장 / 전송</span>
+        </button>
+        <button
+          className={`iot-btn${isLearning ? ' learning' : ''}`}
+          onClick={() => setIsLearning((v) => !v)}
+          title="학습 시작"
+        >
+          <span className="iot-dot" />
+          <span className="tip">{isLearning ? '학습 중지' : '학습 시작'}</span>
         </button>
       </div>
     </div>

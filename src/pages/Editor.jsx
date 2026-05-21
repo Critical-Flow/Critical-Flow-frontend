@@ -49,6 +49,7 @@ export default function Editor() {
   const [md, setMd] = useState(INITIAL_MD);
   const [rsideMode, setRsideMode] = useState('tutor');
   const [isSaved, setIsSaved] = useState(false);
+  const [isLearning, setIsLearning] = useState(false);
   const resizingRef = useRef(false);
   const milkdownRef = useRef(null);
 
@@ -259,6 +260,14 @@ export default function Editor() {
         ><span className="tip">원본 마크다운 보기</span></button>
         <button onClick={handleSave} title="저장">
           <span className="tip">저장 / 전송</span>
+        </button>
+        <button
+          className={`iot-btn${isLearning ? ' learning' : ''}`}
+          onClick={() => setIsLearning((v) => !v)}
+          title="학습 시작"
+        >
+          <span className="iot-dot" />
+          <span className="tip">{isLearning ? '학습 중지' : '학습 시작'}</span>
         </button>
       </div>
     </div>

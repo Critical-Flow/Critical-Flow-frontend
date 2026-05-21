@@ -37,10 +37,7 @@
 .path .dir {
   color: var(--color-teal-500);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
 }
 
 .path .sep {

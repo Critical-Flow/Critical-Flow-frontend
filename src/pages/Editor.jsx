@@ -246,20 +246,20 @@ export default function Editor() {
           className={lsideOpen ? 'on' : ''}
           onClick={() => setLsideOpen((v) => !v)}
           title="L 사이드바"
-        ><span className="tip">L 사이드바</span></button>
+        ><span className="dock-icon">☰</span><span className="tip">L 사이드바</span></button>
         <button
           className={rsideOpen ? 'on' : ''}
           onClick={() => setRsideOpen((v) => !v)}
           title="R 사이드바"
           disabled={!isSaved}
-        ><span className="tip">R 사이드바</span></button>
+        ><span className="dock-icon">🤖</span><span className="tip">R 사이드바</span></button>
         <button
           className={viewMode === 'raw' ? 'on' : ''}
           onClick={cycleView}
           title="원본 마크다운 보기"
-        ><span className="tip">원본 마크다운 보기</span></button>
+        ><span className="dock-icon dock-icon--code">&lt;/&gt;</span><span className="tip">원본 마크다운 보기</span></button>
         <button onClick={handleSave} title="저장">
-          <span className="tip">저장 / 전송</span>
+          <span className="dock-icon">💾</span><span className="tip">저장 / 전송</span>
         </button>
         <button
           className={`iot-btn${isLearning ? ' learning' : ''}`}

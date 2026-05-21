@@ -602,6 +602,14 @@
   box-shadow: 0 0 0 3px rgba(150, 201, 168, 0.25);
 }
 
+.dock button:disabled {
+  background: #c8d8d4;
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .dock button .tip {
   position: absolute;
   bottom: calc(100% + 8px);

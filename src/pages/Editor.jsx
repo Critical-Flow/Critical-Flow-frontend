@@ -48,6 +48,7 @@ export default function Editor() {
   const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState(INITIAL_MD);
   const [rsideMode, setRsideMode] = useState('tutor');
+  const [isSaved, setIsSaved] = useState(false);
   const resizingRef = useRef(false);
   const milkdownRef = useRef(null);
 
@@ -87,6 +88,7 @@ export default function Editor() {
   const handleSave = () => {
     if (lsideOpen) setLsideOpen(false);
     setRsideOpen(true);
+    setIsSaved(true);
     setTimeout(() => alert('💾 저장되었습니다'), 150);
   };
 
@@ -248,6 +250,7 @@ export default function Editor() {
           className={rsideOpen ? 'on' : ''}
           onClick={() => setRsideOpen((v) => !v)}
           title="R 사이드바"
+          disabled={!isSaved}
         ><span className="tip">R 사이드바</span></button>
         <button
           className={viewMode === 'raw' ? 'on' : ''}

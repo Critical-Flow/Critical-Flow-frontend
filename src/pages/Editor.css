@@ -97,6 +97,7 @@
   border-radius: 6px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 2px;
   padding: 0 10px;
   box-shadow: 0 4px 12px rgba(59, 158, 133, 0.3);

@@ -8,6 +8,7 @@
     "@milkdown/preset-commonmark": "^7.21.1",
     "@milkdown/react": "^7.21.1",
     "@milkdown/transformer": "^7.21.1",
+    "axios": "^1.16.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0"

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import { startSession } from '../services/session';
 import './Create.css';
 
 const CHIPS = [
@@ -8,11 +10,13 @@ const CHIPS = [
 ];
 
 export default function Create() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [topicInput, setTopicInput] = useState('');
   const [activeChips, setActiveChips] = useState([]);
   const [time, setTime] = useState(60);
   const [titleError, setTitleError] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const toggleChip = (val) => {
     const next = activeChips.includes(val)
@@ -24,9 +28,20 @@ export default function Create() {
 
   const sliderPct = ((time - 5) / (300 - 5)) * 100;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim()) { setTitleError(true); return; }
-    alert(`✅ 학습 세션 생성 완료!\n제목: ${title}\n주제: ${topicInput || '없음'}\n목표: ${time}분`);
+    setIsCreating(true);
+    try {
+      const { sessionId } = await startSession({
+        title,
+        topics: topicInput,
+        targetMinutes: time,
+      });
+      navigate(`/editor/${sessionId}`);
+    } catch (e) {
+      alert('학습 세션 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -113,7 +128,9 @@ export default function Create() {
             </div>
 
             <div className="form-divider" />
-            <button className="btn-create" onClick={handleCreate}>생성</button>
+            <button className="btn-create" onClick={handleCreate} disabled={isCreating}>
+              {isCreating ? '생성 중...' : '생성'}
+            </button>
           </div>
         </div>
       </div>

@@ -1,52 +1,128 @@
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import Loading from '../components/Loading';
+import ErrorMessage from '../components/ErrorMessage';
+import useFetch from '../hooks/useFetch';
+import { generateQuiz, submitAnswer } from '../services/quiz';
 import './Quiz.css';
 
 export default function Quiz() {
+  const { noteId } = useParams();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [result, setResult] = useState(null);
+
+  const { data: quiz, loading, error, refetch } = useFetch(
+    () => generateQuiz(noteId),
+    [noteId],
+  );
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="quiz-container"><Loading message="퀴즈를 생성하는 중..." /></div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !quiz?.questions?.length) {
+    return (
+      <AppLayout>
+        <div className="quiz-container">
+          <ErrorMessage message="퀴즈를 불러오지 못했어요." onRetry={refetch} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  const totalCount = quiz.questions.length;
+  const question = quiz.questions[currentIndex];
+
+  const handleChoice = async (idx) => {
+    if (selectedIdx !== null) return;
+    setSelectedIdx(idx);
+    try {
+      const res = await submitAnswer(quiz.id, question.id, idx);
+      setResult(res);
+    } catch {
+      setResult({ correct: false, explanation: '정답 확인에 실패했어요.' });
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex >= totalCount - 1) return;
+    setCurrentIndex((i) => i + 1);
+    setSelectedIdx(null);
+    setResult(null);
+  };
+
+  const handlePrev = () => {
+    if (currentIndex === 0) return;
+    setCurrentIndex((i) => i - 1);
+    setSelectedIdx(null);
+    setResult(null);
+  };
+
+  const progressPct = ((currentIndex + 1) / totalCount) * 100;
+
   return (
     <AppLayout>
       <div className="quiz-container">
         <div className="page-title">AI 퀴즈</div>
-        <div className="page-sub">노트 「DFS와 BFS 정리」 기반 자동 생성 문제</div>
+        <div className="page-sub">노트 기반 자동 생성 문제</div>
 
         <div className="progress">
-          <div />
+          <div style={{ width: `${progressPct}%` }} />
         </div>
         <div className="progress-meta">
-          <span>4 / 10 문제</span>
+          <span>{currentIndex + 1} / {totalCount} 문제</span>
           <span>⏱ 02:34</span>
         </div>
 
         <div className="q-card">
-          <span className="q-tag">개념 이해</span>
-          <div className="q-text">Q4. 다음 중 BFS(너비 우선 탐색)에 대한 설명으로 <u>옳은 것</u>은?</div>
-          <div className="choice">
-            <div className="idx">1</div>
-            <div>스택을 이용해 구현하며, 가장 최근 방문한 노드부터 탐색한다.</div>
-          </div>
-          <div className="choice selected correct">
-            <div className="idx">2</div>
-            <div>큐를 이용해 구현하며, 간선 가중치가 동일할 때 최단 경로를 보장한다.</div>
-          </div>
-          <div className="choice">
-            <div className="idx">3</div>
-            <div>음수 가중치 그래프에서도 항상 최단 경로를 찾을 수 있다.</div>
-          </div>
-          <div className="choice">
-            <div className="idx">4</div>
-            <div>시간복잡도는 항상 O(V²)이다.</div>
-          </div>
+          <span className="q-tag">{question.tag}</span>
+          <div className="q-text">{question.question}</div>
+          {question.choices.map((choice, idx) => {
+            const isSelected = selectedIdx === idx;
+            const isCorrect = result && idx === question.answerIndex;
+            const isWrong = result && isSelected && !result.correct;
+            const classes = ['choice'];
+            if (isSelected) classes.push('selected');
+            if (isCorrect) classes.push('correct');
+            if (isWrong) classes.push('wrong');
+            return (
+              <div
+                key={idx}
+                className={classes.join(' ')}
+                onClick={() => handleChoice(idx)}
+                style={{ cursor: selectedIdx === null ? 'pointer' : 'default' }}
+              >
+                <div className="idx">{idx + 1}</div>
+                <div>{choice}</div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="feedback">
-          <h4>✅ 정답입니다!</h4>
-          <p>BFS는 큐(FIFO)를 사용하여 시작 노드로부터 가까운 노드부터 차례로 탐색합니다.
-            모든 간선의 가중치가 동일한 경우 최단 경로를 보장하지만, 음수 가중치가 포함된 그래프에서는
-            다익스트라나 벨만-포드 알고리즘을 사용해야 합니다.</p>
-        </div>
+        {result && (
+          <div className="feedback">
+            <h4>{result.correct ? '✅ 정답입니다!' : '❌ 오답입니다.'}</h4>
+            <p>{result.explanation}</p>
+          </div>
+        )}
 
         <div className="q-actions">
-          <button className="btn btn-ghost">← 이전 문제</button>
-          <button className="btn btn-primary">다음 문제 →</button>
+          <button
+            className="btn btn-ghost"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+          >← 이전 문제</button>
+          <button
+            className="btn btn-primary"
+            onClick={handleNext}
+            disabled={currentIndex >= totalCount - 1}
+          >다음 문제 →</button>
         </div>
       </div>
     </AppLayout>

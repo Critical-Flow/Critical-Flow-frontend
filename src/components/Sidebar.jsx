@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
+import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
 export default function Sidebar({ isGuest = false }) {
   const { pathname } = useLocation();
   const { setMyPageOpen } = useModal();
+  const { user } = useAuth();
 
   const dashPath = isGuest ? '/dashboard-empty' : '/dashboard';
   const createPath = isGuest ? '/create-empty' : '/create';
@@ -27,7 +29,7 @@ export default function Sidebar({ isGuest = false }) {
         <Link to={dirPath} className={active(['/directory', '/directory-empty'])}>📝 노트</Link>
       </nav>
       <div className="s-bottom">
-        <div className="s-user">김영남</div>
+        <div className="s-user">{user?.name ?? '게스트'}</div>
         <button className="s-mypage-btn" onClick={() => setMyPageOpen(true)}>
           👤 마이페이지
         </button>

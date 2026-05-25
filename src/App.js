@@ -26,10 +26,10 @@ export default function App() {
             <Route path="/dashboard-empty" element={<DashboardEmpty />} />
             <Route path="/directory" element={<Directory />} />
             <Route path="/directory-empty" element={<DirectoryEmpty />} />
-            <Route path="/editor" element={<Editor />} />
+            <Route path="/editor/:noteId" element={<Editor />} />
             <Route path="/create" element={<Create />} />
             <Route path="/create-empty" element={<CreateEmpty />} />
-            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/quiz/:noteId" element={<Quiz />} />
           </Routes>
           <MyPageModal />
         </BrowserRouter>

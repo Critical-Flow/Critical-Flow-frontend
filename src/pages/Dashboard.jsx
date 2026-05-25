@@ -1,17 +1,35 @@
 import AppLayout from '../components/AppLayout';
+import Loading from '../components/Loading';
+import ErrorMessage from '../components/ErrorMessage';
+import useFetch from '../hooks/useFetch';
+import { getStats } from '../services/dashboard';
 import './Dashboard.css';
 
-const BAR_DATA = [
-  { lbl: '월', val: '2.5h', h: 84 },
-  { lbl: '화', val: '3.2h', h: 108 },
-  { lbl: '수', val: '1.8h', h: 61 },
-  { lbl: '목', val: '4.1h', h: 139 },
-  { lbl: '금', val: '2.9h', h: 98 },
-  { lbl: '토', val: '5.3h', h: 180 },
-  { lbl: '일', val: '3.7h', h: 125 },
-];
+const TOPIC_COLORS = ['#A8E0CD', '#3EA990', '#4DBDA3', '#e5e7eb'];
 
 export default function Dashboard() {
+  const { data, loading, error, refetch } = useFetch(getStats);
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="dash-container"><Loading /></div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <AppLayout>
+        <div className="dash-container">
+          <ErrorMessage message="학습 통계를 불러오지 못했어요." onRetry={refetch} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  let donutOffset = 0;
+
   return (
     <AppLayout>
       <div className="dash-container">
@@ -21,23 +39,23 @@ export default function Dashboard() {
         <div className="kpi-grid">
           <div className="kpi">
             <div className="label">총 학습 시간</div>
-            <div className="value">23.5h</div>
-            <div className="delta up">▲ 12% vs 지난주</div>
+            <div className="value">{data.totalHours}h</div>
+            <div className="delta up">▲ {data.totalHoursDelta}% vs 지난주</div>
           </div>
           <div className="kpi">
             <div className="label">작성한 노트</div>
-            <div className="value">14개</div>
-            <div className="delta up">▲ 4개</div>
+            <div className="value">{data.noteCount}개</div>
+            <div className="delta up">▲ {data.noteCountDelta}개</div>
           </div>
           <div className="kpi">
             <div className="label">퀴즈 정답률</div>
-            <div className="value">78%</div>
-            <div className="delta up">▲ 5%p</div>
+            <div className="value">{data.quizAccuracy}%</div>
+            <div className="delta up">▲ {data.quizAccuracyDelta}%p</div>
           </div>
           <div className="kpi">
             <div className="label">연속 학습일</div>
-            <div className="value">12일 🔥</div>
-            <div className="delta up">목표까지 3일</div>
+            <div className="value">{data.streakDays}일 🔥</div>
+            <div className="delta up">목표까지 {data.streakGoalGap}일</div>
           </div>
         </div>
 
@@ -45,11 +63,11 @@ export default function Dashboard() {
           <div className="chart-card">
             <h3>요일별 학습 시간</h3>
             <div className="bar-chart">
-              {BAR_DATA.map(({ lbl, val, h }) => (
-                <div className="col" key={lbl}>
-                  <div className="val">{val}</div>
-                  <div className="bar" style={{ height: `${h}px` }} />
-                  <div className="lbl">{lbl}</div>
+              {data.weekly.map(({ day, hours }) => (
+                <div className="col" key={day}>
+                  <div className="val">{hours}h</div>
+                  <div className="bar" style={{ height: `${Math.round(hours * 34)}px` }} />
+                  <div className="lbl">{day}</div>
                 </div>
               ))}
             </div>
@@ -60,18 +78,31 @@ export default function Dashboard() {
             <div className="donut">
               <svg viewBox="0 0 36 36" width="140" height="140">
                 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" strokeWidth="4" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#A8E0CD" strokeWidth="4"
-                  strokeDasharray="40 100" strokeDashoffset="0" transform="rotate(-90 18 18)" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#3EA990" strokeWidth="4"
-                  strokeDasharray="30 100" strokeDashoffset="-40" transform="rotate(-90 18 18)" />
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#4DBDA3" strokeWidth="4"
-                  strokeDasharray="20 100" strokeDashoffset="-70" transform="rotate(-90 18 18)" />
+                {data.topics.map(({ name, percent }, idx) => {
+                  const dashArray = `${percent} 100`;
+                  const dashOffset = -donutOffset;
+                  donutOffset += percent;
+                  return (
+                    <circle
+                      key={name}
+                      cx="18" cy="18" r="15.9"
+                      fill="none"
+                      stroke={TOPIC_COLORS[idx % TOPIC_COLORS.length]}
+                      strokeWidth="4"
+                      strokeDasharray={dashArray}
+                      strokeDashoffset={dashOffset}
+                      transform="rotate(-90 18 18)"
+                    />
+                  );
+                })}
               </svg>
               <div className="legend">
-                <div><span className="dot" style={{ background: '#A8E0CD' }} />알고리즘 40%</div>
-                <div><span className="dot" style={{ background: '#3EA990' }} />React 30%</div>
-                <div><span className="dot" style={{ background: '#4DBDA3' }} />Python 20%</div>
-                <div><span className="dot" style={{ background: '#e5e7eb' }} />기타 10%</div>
+                {data.topics.map(({ name, percent }, idx) => (
+                  <div key={name}>
+                    <span className="dot" style={{ background: TOPIC_COLORS[idx % TOPIC_COLORS.length] }} />
+                    {name} {percent}%
+                  </div>
+                ))}
               </div>
             </div>
           </div>

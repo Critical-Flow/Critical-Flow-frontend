@@ -1,4 +1,6 @@
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
+import KpiCard from '../components/KpiCard';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
@@ -33,30 +35,13 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="dash-container">
-        <div className="page-title">학습 통계</div>
-        <div className="page-sub">최근 7일 학습 기록</div>
+        <PageHeader title="학습 통계" sub="최근 7일 학습 기록" />
 
         <div className="kpi-grid">
-          <div className="kpi">
-            <div className="label">총 학습 시간</div>
-            <div className="value">{data.totalHours}h</div>
-            <div className="delta up">▲ {data.totalHoursDelta}% vs 지난주</div>
-          </div>
-          <div className="kpi">
-            <div className="label">작성한 노트</div>
-            <div className="value">{data.noteCount}개</div>
-            <div className="delta up">▲ {data.noteCountDelta}개</div>
-          </div>
-          <div className="kpi">
-            <div className="label">퀴즈 정답률</div>
-            <div className="value">{data.quizAccuracy}%</div>
-            <div className="delta up">▲ {data.quizAccuracyDelta}%p</div>
-          </div>
-          <div className="kpi">
-            <div className="label">연속 학습일</div>
-            <div className="value">{data.streakDays}일 🔥</div>
-            <div className="delta up">목표까지 {data.streakGoalGap}일</div>
-          </div>
+          <KpiCard label="총 학습 시간" value={`${data.totalHours}h`} delta={`▲ ${data.totalHoursDelta}% vs 지난주`} />
+          <KpiCard label="작성한 노트" value={`${data.noteCount}개`} delta={`▲ ${data.noteCountDelta}개`} />
+          <KpiCard label="퀴즈 정답률" value={`${data.quizAccuracy}%`} delta={`▲ ${data.quizAccuracyDelta}%p`} />
+          <KpiCard label="연속 학습일" value={`${data.streakDays}일 🔥`} delta={`목표까지 ${data.streakGoalGap}일`} />
         </div>
 
         <div className="charts">

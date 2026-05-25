@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
+import ChoiceItem from '../components/ChoiceItem';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
@@ -69,8 +71,7 @@ export default function Quiz() {
   return (
     <AppLayout>
       <div className="quiz-container">
-        <div className="page-title">AI 퀴즈</div>
-        <div className="page-sub">노트 기반 자동 생성 문제</div>
+        <PageHeader title="AI 퀴즈" sub="노트 기반 자동 생성 문제" />
 
         <div className="progress">
           <div style={{ width: `${progressPct}%` }} />
@@ -83,26 +84,17 @@ export default function Quiz() {
         <div className="q-card">
           <span className="q-tag">{question.tag}</span>
           <div className="q-text">{question.question}</div>
-          {question.choices.map((choice, idx) => {
-            const isSelected = selectedIdx === idx;
-            const isCorrect = result && idx === question.answerIndex;
-            const isWrong = result && isSelected && !result.correct;
-            const classes = ['choice'];
-            if (isSelected) classes.push('selected');
-            if (isCorrect) classes.push('correct');
-            if (isWrong) classes.push('wrong');
-            return (
-              <div
-                key={idx}
-                className={classes.join(' ')}
-                onClick={() => handleChoice(idx)}
-                style={{ cursor: selectedIdx === null ? 'pointer' : 'default' }}
-              >
-                <div className="idx">{idx + 1}</div>
-                <div>{choice}</div>
-              </div>
-            );
-          })}
+          {question.choices.map((choice, idx) => (
+            <ChoiceItem
+              key={idx}
+              index={idx}
+              text={choice}
+              isSelected={selectedIdx === idx}
+              isCorrect={result && idx === question.answerIndex}
+              isWrong={result && selectedIdx === idx && !result.correct}
+              onClick={selectedIdx === null ? () => handleChoice(idx) : undefined}
+            />
+          ))}
         </div>
 
         {result && (

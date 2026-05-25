@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
+import NoteCard from '../components/NoteCard';
+import FolderItem from '../components/FolderItem';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useDebounce from '../hooks/useDebounce';
 import { getNotes, getFolders, getTags } from '../services/notes';
-import { formatRelativeTime, formatDuration } from '../utils/date';
 import './Directory.css';
 
 export default function Directory() {
@@ -38,8 +40,7 @@ export default function Directory() {
       <div className="dir-container">
         <div className="notes-head">
           <div>
-            <div className="page-title">내 노트</div>
-            <div className="page-sub">총 {totalCount}개의 노트</div>
+            <PageHeader title="내 노트" sub={`총 ${totalCount}개의 노트`} />
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <input
@@ -56,22 +57,19 @@ export default function Directory() {
         <div className="notes-layout">
           <aside className="folder-panel">
             <h4>폴더</h4>
-            {(folders ?? []).map(({ id, icon, name, count }) => (
-              <div
-                key={id}
-                className={`folder-item${folderId === id ? ' active' : ''}`}
-                onClick={() => setFolderId(id)}
-                style={{ cursor: 'pointer' }}
-              >
-                <span>{icon} {name}</span>
-                <span className="folder-count">{count}</span>
-              </div>
+            {(folders ?? []).map((folder) => (
+              <FolderItem
+                key={folder.id}
+                icon={folder.icon}
+                name={folder.name}
+                count={folder.count}
+                active={folderId === folder.id}
+                onClick={() => setFolderId(folder.id)}
+              />
             ))}
             <h4 style={{ marginTop: '24px' }}>태그</h4>
             {(tags ?? []).map((tag) => (
-              <div key={tag} className="folder-item">
-                <span>{tag}</span>
-              </div>
+              <FolderItem key={tag} name={tag} />
             ))}
           </aside>
 
@@ -83,15 +81,14 @@ export default function Directory() {
             {!notesLoading && !notesError && (
               <div className="notes-grid">
                 {filteredNotes.map((note) => (
-                  <Link to={`/editor/${note.id}`} className="note-card" key={note.id}>
-                    <div className="note-icon">📄</div>
-                    <span className="tag">{note.tags?.[0] ?? ''}</span>
-                    <h3>{note.title}</h3>
-                    <div className="meta">
-                      <span>{formatRelativeTime(note.updatedAt)}</span>
-                      <span>📖 {formatDuration(note.readMinutes)}</span>
-                    </div>
-                  </Link>
+                  <NoteCard
+                    key={note.id}
+                    id={note.id}
+                    title={note.title}
+                    tag={note.tags?.[0] ?? ''}
+                    updatedAt={note.updatedAt}
+                    readMinutes={note.readMinutes}
+                  />
                 ))}
               </div>
             )}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
 import './DirectoryEmpty.css';
 
 export default function DirectoryEmpty() {
@@ -7,8 +8,7 @@ export default function DirectoryEmpty() {
     <AppLayout isGuest>
       <div className="dire-container">
         <div>
-          <div className="page-title">내 노트</div>
-          <div className="page-sub">총 0개의 노트</div>
+          <PageHeader title="내 노트" sub="총 0개의 노트" />
         </div>
         <div className="empty-state">
           <div className="empty-mascot">📁</div>

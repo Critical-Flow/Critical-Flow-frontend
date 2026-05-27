@@ -10,7 +10,6 @@ import Directory from './pages/Directory';
 import DirectoryEmpty from './pages/DirectoryEmpty';
 import Editor from './pages/Editor';
 import Create from './pages/Create';
-import CreateEmpty from './pages/CreateEmpty';
 import Quiz from './pages/Quiz';
 import './styles/global.css';
 
@@ -26,10 +25,10 @@ export default function App() {
             <Route path="/dashboard-empty" element={<DashboardEmpty />} />
             <Route path="/directory" element={<Directory />} />
             <Route path="/directory-empty" element={<DirectoryEmpty />} />
-            <Route path="/editor" element={<Editor />} />
+            <Route path="/editor/:noteId" element={<Editor />} />
             <Route path="/create" element={<Create />} />
-            <Route path="/create-empty" element={<CreateEmpty />} />
-            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/create-empty" element={<Create isGuest />} />
+            <Route path="/quiz/:noteId" element={<Quiz />} />
           </Routes>
           <MyPageModal />
         </BrowserRouter>

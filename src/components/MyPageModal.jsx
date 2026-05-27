@@ -1,22 +1,27 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
+import { useAuth } from '../context/AuthContext';
 import './MyPageModal.css';
 
-function UserInfoTab() {
+function UserInfoTab({ user }) {
+  const githubLabel = user?.username ? `GitHub · @${user.username}` : 'GitHub · 미연결';
+  const isLinked = Boolean(user?.username);
+
   return (
     <div className="mpm-content">
       <div className="mpm-row">
         <div className="mpm-row-label">사용자 정보</div>
         <div className="mpm-row-body">
-          <span className="mpm-value">김영남</span>
+          <span className="mpm-value">{user?.name ?? '게스트'}</span>
           <button className="mpm-btn-sm">변경</button>
         </div>
       </div>
       <div className="mpm-row">
         <div className="mpm-row-label">github 계정</div>
         <div className="mpm-row-body">
-          <span className="mpm-value">GitHub · @kimyoungnam</span>
-          <span className="mpm-badge">● 연결됨</span>
+          <span className="mpm-value">{githubLabel}</span>
+          <span className="mpm-badge">{isLinked ? '● 연결됨' : '○ 미연결'}</span>
         </div>
       </div>
       <div className="mpm-row">
@@ -25,7 +30,7 @@ function UserInfoTab() {
           <input
             type="text"
             className="mpm-input"
-            defaultValue="김영남"
+            defaultValue={user?.name ?? ''}
             placeholder="표시 이름을 입력하세요"
           />
           <button className="mpm-btn-sm">저장</button>
@@ -84,6 +89,8 @@ function InquiryTab() {
 
 export default function MyPageModal() {
   const { myPageOpen, setMyPageOpen } = useModal();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('user');
 
   useEffect(() => {
@@ -95,6 +102,12 @@ export default function MyPageModal() {
   }, [myPageOpen, setMyPageOpen]);
 
   if (!myPageOpen) return null;
+
+  const handleLogout = () => {
+    logout();
+    setMyPageOpen(false);
+    navigate('/');
+  };
 
   return (
     <div className="mpm-overlay" onClick={() => setMyPageOpen(false)}>
@@ -124,14 +137,14 @@ export default function MyPageModal() {
                 문의사항
               </button>
             </div>
-            <button className="mpm-logout" onClick={() => setMyPageOpen(false)}>
+            <button className="mpm-logout" onClick={handleLogout}>
               로그아웃
             </button>
           </aside>
 
           {/* 우측 컨텐츠 */}
           <main className="mpm-main">
-            {activeTab === 'user' ? <UserInfoTab /> : <InquiryTab />}
+            {activeTab === 'user' ? <UserInfoTab user={user} /> : <InquiryTab />}
           </main>
         </div>
 

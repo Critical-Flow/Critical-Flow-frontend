@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
+import { startSession } from '../services/session';
 import './Create.css';
 
 const CHIPS = [
@@ -7,12 +10,14 @@ const CHIPS = [
   'TypeScript', 'Vue', 'Node.js', '알고리즘', '자료구조', '데이터베이스', '운영체제',
 ];
 
-export default function Create() {
+export default function Create({ isGuest = false }) {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [topicInput, setTopicInput] = useState('');
   const [activeChips, setActiveChips] = useState([]);
   const [time, setTime] = useState(60);
   const [titleError, setTitleError] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const toggleChip = (val) => {
     const next = activeChips.includes(val)
@@ -24,16 +29,30 @@ export default function Create() {
 
   const sliderPct = ((time - 5) / (300 - 5)) * 100;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim()) { setTitleError(true); return; }
-    alert(`✅ 학습 세션 생성 완료!\n제목: ${title}\n주제: ${topicInput || '없음'}\n목표: ${time}분`);
+    if (isGuest) {
+      alert('로그인 후 이용해 주세요.');
+      return;
+    }
+    setIsCreating(true);
+    try {
+      const { sessionId } = await startSession({
+        title,
+        topics: topicInput,
+        targetMinutes: time,
+      });
+      navigate(`/editor/${sessionId}`);
+    } catch {
+      alert('학습 세션 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+      setIsCreating(false);
+    }
   };
 
   return (
-    <AppLayout>
+    <AppLayout isGuest={isGuest}>
       <div className="create-container">
-        <div className="page-title">학습 생성</div>
-        <div className="page-sub">새로운 학습 세션을 설정하세요</div>
+        <PageHeader title="학습 생성" sub="새로운 학습 세션을 설정하세요" />
 
         <div className="create-wrap">
           <div className="form-card">
@@ -113,7 +132,9 @@ export default function Create() {
             </div>
 
             <div className="form-divider" />
-            <button className="btn-create" onClick={handleCreate}>생성</button>
+            <button className="btn-create" onClick={handleCreate} disabled={isCreating}>
+              {isCreating ? '생성 중...' : '생성'}
+            </button>
           </div>
         </div>
       </div>

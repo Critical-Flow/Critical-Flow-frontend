@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import PageHeader from '../components/PageHeader';
 import { startSession } from '../services/session';
 import './Create.css';
 
@@ -9,7 +10,7 @@ const CHIPS = [
   'TypeScript', 'Vue', 'Node.js', '알고리즘', '자료구조', '데이터베이스', '운영체제',
 ];
 
-export default function Create() {
+export default function Create({ isGuest = false }) {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [topicInput, setTopicInput] = useState('');
@@ -30,6 +31,10 @@ export default function Create() {
 
   const handleCreate = async () => {
     if (!title.trim()) { setTitleError(true); return; }
+    if (isGuest) {
+      alert('로그인 후 이용해 주세요.');
+      return;
+    }
     setIsCreating(true);
     try {
       const { sessionId } = await startSession({
@@ -38,17 +43,16 @@ export default function Create() {
         targetMinutes: time,
       });
       navigate(`/editor/${sessionId}`);
-    } catch (e) {
+    } catch {
       alert('학습 세션 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
       setIsCreating(false);
     }
   };
 
   return (
-    <AppLayout>
+    <AppLayout isGuest={isGuest}>
       <div className="create-container">
-        <div className="page-title">학습 생성</div>
-        <div className="page-sub">새로운 학습 세션을 설정하세요</div>
+        <PageHeader title="학습 생성" sub="새로운 학습 세션을 설정하세요" />
 
         <div className="create-wrap">
           <div className="form-card">

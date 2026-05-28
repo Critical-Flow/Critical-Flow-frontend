@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
+import { logoutApi } from '../services/auth';
 import './MyPageModal.css';
 
 function UserInfoTab({ user }) {
@@ -103,7 +104,8 @@ export default function MyPageModal() {
 
   if (!myPageOpen) return null;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutApi();
     logout();
     setMyPageOpen(false);
     navigate('/');

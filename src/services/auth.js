@@ -1,6 +1,11 @@
 import api from './api';
 
-const USE_MOCK = import.meta.env.DEV;
+//MUCK 데이터용
+//const USE_MOCK = import.meta.env.DEV;
+
+//실제 서버 API용
+const USE_MOCK = false;
+
 
 const MOCK_USER = {
   id: 1,

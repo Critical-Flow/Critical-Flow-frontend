@@ -6,8 +6,8 @@ import { logoutApi } from '../services/auth';
 import './MyPageModal.css';
 
 function UserInfoTab({ user }) {
-  const githubLabel = user?.username ? `GitHub · @${user.username}` : 'GitHub · 미연결';
-  const isLinked = Boolean(user?.username);
+  const githubLabel = user ? `GitHub · @${user.name}` : 'GitHub · 미연결';
+  const isLinked = Boolean(user);
 
   return (
     <div className="mpm-content">

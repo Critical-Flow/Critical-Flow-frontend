@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import PageHeader from '../components/PageHeader';
-import { startSession } from '../services/session';
+import { createCategory } from '../services/notes';
 import './Create.css';
 
 const CHIPS = [
@@ -37,14 +37,10 @@ export default function Create({ isGuest = false }) {
     }
     setIsCreating(true);
     try {
-      const { sessionId } = await startSession({
-        title,
-        topics: topicInput,
-        targetMinutes: time,
-      });
-      navigate(`/editor/${sessionId}`);
+      const { categoryId } = await createCategory({ title, description: topicInput });
+      navigate('/directory');
     } catch {
-      alert('학습 세션 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+      alert('학습 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
       setIsCreating(false);
     }
   };
@@ -88,9 +84,9 @@ export default function Create({ isGuest = false }) {
               </div>
             </div>
 
-            <div className="form-divider" />
+            <div className="form-divider" style={{ display: 'none' }} />
 
-            <div className="form-section">
+            <div className="form-section" style={{ display: 'none' }}>
               <label className="form-label">목표 학습 시간</label>
               <div className="time-row">
                 <input

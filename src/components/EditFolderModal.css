@@ -1,0 +1,77 @@
+.efm-modal {
+  width: min(420px, 95vw);
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.efm-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.efm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.efm-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+.efm-input {
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  color: var(--ink);
+}
+
+.efm-input:focus {
+  border-color: var(--primary);
+}
+
+.efm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.efm-btn-cancel {
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sub);
+  background: #fff;
+  cursor: pointer;
+}
+
+.efm-btn-cancel:hover {
+  background: var(--bg-base);
+}
+
+.efm-btn-save {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.efm-btn-save:hover {
+  background: var(--primary-2);
+}

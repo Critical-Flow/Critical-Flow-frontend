@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
 import PageHeader from '../components/PageHeader';
 import NoteCard from '../components/NoteCard';
 import FolderItem from '../components/FolderItem';
+import EditFolderModal from '../components/EditFolderModal';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useDebounce from '../hooks/useDebounce';
-import { getNotes, getFolders, getTags } from '../services/notes';
+import { getNotes, getFolders, deleteCategory, updateCategory } from '../services/notes';
 import './Directory.css';
 
 export default function Directory() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const [folderId, setFolderId] = useState(0);
+  const [activeCategoryId, setActiveCategoryId] = useState(0);
+  const [editingFolder, setEditingFolder] = useState(null);
   const debouncedSearch = useDebounce(search, 300);
 
   const {
@@ -22,25 +26,55 @@ export default function Directory() {
     error: notesError,
     refetch: refetchNotes,
   } = useFetch(
-    () => getNotes({ folderId, search: debouncedSearch }),
-    [folderId, debouncedSearch],
+    () => getNotes({ userId: user?.userId }),
+    [user?.userId],
   );
 
-  const { data: folders } = useFetch(getFolders);
-  const { data: tags } = useFetch(getTags);
+  const { data: categories, refetch: refetchFolders } = useFetch(getFolders, []);
 
-  const filteredNotes = debouncedSearch
-    ? (notes ?? []).filter((n) => n.title.toLowerCase().includes(debouncedSearch.toLowerCase()))
-    : (notes ?? []);
+  const allFolders = [
+    { categoryId: 0, title: '전체', icon: '📚' },
+    ...(categories ?? []).map((c) => ({ ...c, icon: '📁' })),
+  ];
 
-  const totalCount = folders?.find((f) => f.id === 0)?.count ?? notes?.length ?? 0;
+  const getCategoryTitle = (categoryId) =>
+    categories?.find((c) => c.categoryId === categoryId)?.title ?? '';
+
+  const folderNotes = (notes ?? []).filter(
+    (note) => activeCategoryId === 0 || note.categoryId === activeCategoryId,
+  );
+
+  const filtered = folderNotes.filter((note) =>
+    note.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
+  );
+
+  const handleDeleteFolder = async (categoryId) => {
+    if (!window.confirm('폴더를 삭제하시겠어요?')) return;
+    try {
+      await deleteCategory(categoryId);
+      if (activeCategoryId === categoryId) setActiveCategoryId(0);
+      refetchFolders();
+    } catch {
+      alert('삭제에 실패했어요.');
+    }
+  };
+
+  const handleEditSave = async ({ title, description }) => {
+    try {
+      await updateCategory(editingFolder.categoryId, { title, description });
+      setEditingFolder(null);
+      refetchFolders();
+    } catch {
+      alert('수정에 실패했어요.');
+    }
+  };
 
   return (
     <AppLayout>
       <div className="dir-container">
         <div className="notes-head">
           <div>
-            <PageHeader title="내 노트" sub={`총 ${totalCount}개의 노트`} />
+            <PageHeader title="내 노트" sub={`총 ${folderNotes.length}개의 노트`} />
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <input
@@ -57,19 +91,16 @@ export default function Directory() {
         <div className="notes-layout">
           <aside className="folder-panel">
             <h4>폴더</h4>
-            {(folders ?? []).map((folder) => (
+            {allFolders.map(({ categoryId, title, icon, description }) => (
               <FolderItem
-                key={folder.id}
-                icon={folder.icon}
-                name={folder.name}
-                count={folder.count}
-                active={folderId === folder.id}
-                onClick={() => setFolderId(folder.id)}
+                key={categoryId}
+                icon={icon}
+                name={title}
+                active={activeCategoryId === categoryId}
+                onClick={() => setActiveCategoryId(categoryId)}
+                onEdit={categoryId !== 0 ? () => setEditingFolder({ categoryId, title, description }) : undefined}
+                onDelete={categoryId !== 0 ? () => handleDeleteFolder(categoryId) : undefined}
               />
-            ))}
-            <h4 style={{ marginTop: '24px' }}>태그</h4>
-            {(tags ?? []).map((tag) => (
-              <FolderItem key={tag} name={tag} />
             ))}
           </aside>
 
@@ -80,12 +111,12 @@ export default function Directory() {
             )}
             {!notesLoading && !notesError && (
               <div className="notes-grid">
-                {filteredNotes.map((note) => (
+                {filtered.map((note) => (
                   <NoteCard
-                    key={note.id}
-                    id={note.id}
+                    key={note.noteId}
+                    id={note.noteId}
                     title={note.title}
-                    tag={note.tags?.[0] ?? ''}
+                    tag={getCategoryTitle(note.categoryId)}
                     updatedAt={note.updatedAt}
                     readMinutes={note.readMinutes}
                   />
@@ -95,6 +126,14 @@ export default function Directory() {
           </div>
         </div>
       </div>
+
+      {editingFolder && (
+        <EditFolderModal
+          folder={editingFolder}
+          onSave={handleEditSave}
+          onClose={() => setEditingFolder(null)}
+        />
+      )}
     </AppLayout>
   );
 }

@@ -1,31 +1,35 @@
 import api from './api';
 
-const USE_MOCK = import.meta.env.DEV;
+//const USE_MOCK = import.meta.env.DEV;
+const USE_MOCK = false;
+
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString();
+}
 
 const MOCK_NOTES = [
-  { id: 1, folderId: 1, title: 'DFS와 BFS 정리', tags: ['알고리즘'], updatedAt: daysAgo(2), readMinutes: 12 },
-  { id: 2, folderId: 2, title: 'useEffect 클린업', tags: ['React'], updatedAt: daysAgo(1), readMinutes: 8 },
-  { id: 3, folderId: 3, title: '리스트 컴프리헨션', tags: ['Python'], updatedAt: daysAgo(3), readMinutes: 5 },
-  { id: 4, folderId: 4, title: '해시 테이블', tags: ['자료구조'], updatedAt: daysAgo(5), readMinutes: 15 },
-  { id: 5, folderId: 1, title: '다익스트라', tags: ['알고리즘'], updatedAt: daysAgo(7), readMinutes: 20 },
-  { id: 6, folderId: 2, title: '상태 관리 비교', tags: ['React'], updatedAt: daysAgo(7), readMinutes: 10 },
-  { id: 7, folderId: 1, title: '이분 탐색', tags: ['알고리즘'], updatedAt: daysAgo(8), readMinutes: 7 },
-  { id: 8, folderId: 3, title: '데코레이터 패턴', tags: ['Python'], updatedAt: daysAgo(14), readMinutes: 9 },
-  { id: 9, folderId: 4, title: '트리 순회', tags: ['자료구조'], updatedAt: daysAgo(14), readMinutes: 11 },
-  { id: 10, folderId: 2, title: 'React Query', tags: ['React'], updatedAt: daysAgo(15), readMinutes: 14 },
-  { id: 11, folderId: 3, title: '제너레이터', tags: ['Python'], updatedAt: daysAgo(21), readMinutes: 6 },
-  { id: 12, folderId: 1, title: '동적 프로그래밍', tags: ['알고리즘'], updatedAt: daysAgo(21), readMinutes: 18 },
+  { noteId: 1, categoryId: 1, title: 'DFS와 BFS 정리', updatedAt: daysAgo(2), readMinutes: 12 },
+  { noteId: 2, categoryId: 2, title: 'useEffect 클린업', updatedAt: daysAgo(1), readMinutes: 8 },
+  { noteId: 3, categoryId: 3, title: '리스트 컴프리헨션', updatedAt: daysAgo(3), readMinutes: 5 },
+  { noteId: 4, categoryId: 4, title: '해시 테이블', updatedAt: daysAgo(5), readMinutes: 15 },
+  { noteId: 5, categoryId: 1, title: '다익스트라', updatedAt: daysAgo(7), readMinutes: 20 },
+  { noteId: 6, categoryId: 2, title: '상태 관리 비교', updatedAt: daysAgo(7), readMinutes: 10 },
+  { noteId: 7, categoryId: 1, title: '이분 탐색', updatedAt: daysAgo(8), readMinutes: 7 },
+  { noteId: 8, categoryId: 3, title: '데코레이터 패턴', updatedAt: daysAgo(14), readMinutes: 9 },
+  { noteId: 9, categoryId: 4, title: '트리 순회', updatedAt: daysAgo(14), readMinutes: 11 },
+  { noteId: 10, categoryId: 2, title: 'React Query', updatedAt: daysAgo(15), readMinutes: 14 },
+  { noteId: 11, categoryId: 3, title: '제너레이터', updatedAt: daysAgo(21), readMinutes: 6 },
+  { noteId: 12, categoryId: 1, title: '동적 프로그래밍', updatedAt: daysAgo(21), readMinutes: 18 },
 ];
 
 const MOCK_FOLDERS = [
-  { id: 0, icon: '📚', name: '전체', count: 12 },
-  { id: 1, icon: '💻', name: '알고리즘', count: 4 },
-  { id: 2, icon: '⚛️', name: 'React', count: 3 },
-  { id: 3, icon: '🐍', name: 'Python', count: 3 },
-  { id: 4, icon: '📦', name: '자료구조', count: 2 },
+  { categoryId: 1, title: '알고리즘', description: '' },
+  { categoryId: 2, title: 'React', description: '' },
+  { categoryId: 3, title: 'Python', description: '' },
+  { categoryId: 4, title: '자료구조', description: '' },
 ];
-
-const MOCK_TAGS = ['#복습필요', '#중요', '#시험범위'];
 
 const MOCK_NOTE_DETAIL = `# DFS와 BFS 정리
 
@@ -40,53 +44,44 @@ const MOCK_NOTE_DETAIL = `# DFS와 BFS 정리
 큐를 사용해 가까운 노드부터 방문한다.
 `;
 
-function daysAgo(n) {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d.toISOString();
-}
-
 export async function getNotes(params = {}) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
-    if (params.folderId && params.folderId !== 0) {
-      return MOCK_NOTES.filter((n) => n.folderId === params.folderId);
-    }
     return MOCK_NOTES;
   }
   const { data } = await api.get('/api/notes', { params });
   return data;
 }
 
-export async function getNote(id) {
+export async function getNote(noteId, userId) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    const meta = MOCK_NOTES.find((n) => n.id === Number(id)) || MOCK_NOTES[0];
+    const meta = MOCK_NOTES.find((n) => n.noteId === Number(noteId)) ?? MOCK_NOTES[0];
     return { ...meta, content: MOCK_NOTE_DETAIL };
   }
-  const { data } = await api.get(`/api/notes/${id}`);
+  const { data } = await api.get(`/api/notes/${noteId}`, { params: { userId } });
   return data;
 }
 
-export async function saveNote(note) {
+export async function saveNote(note, userId) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return { id: note.id ?? Date.now(), ...note, updatedAt: new Date().toISOString() };
+    return { noteId: note.noteId ?? Date.now(), ...note, updatedAt: new Date().toISOString() };
   }
-  if (note.id) {
-    const { data } = await api.put(`/api/notes/${note.id}`, note);
+  if (note.noteId) {
+    const { data } = await api.put(`/api/notes/${note.noteId}`, note, { params: { userId } });
     return data;
   }
-  const { data } = await api.post('/api/notes', note);
+  const { data } = await api.post('/api/notes', note, { params: { userId } });
   return data;
 }
 
-export async function deleteNote(id) {
+export async function deleteNote(noteId, userId) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 150));
     return { ok: true };
   }
-  await api.delete(`/api/notes/${id}`);
+  await api.delete(`/api/notes/${noteId}`, { params: { userId } });
   return { ok: true };
 }
 
@@ -95,15 +90,33 @@ export async function getFolders() {
     await new Promise((r) => setTimeout(r, 150));
     return MOCK_FOLDERS;
   }
-  const { data } = await api.get('/api/folders');
+  const { data } = await api.get('/api/v1/categories');
   return data;
 }
 
-export async function getTags() {
+export async function createCategory({ title, description }) {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 200));
+    return { categoryId: Date.now(), title, description, createdAt: new Date().toISOString() };
+  }
+  const { data } = await api.post('/api/v1/categories', { title, description });
+  return data;
+}
+
+export async function updateCategory(categoryId, payload) {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 200));
+    return { categoryId, ...payload };
+  }
+  const { data } = await api.patch(`/api/v1/categories/${categoryId}`, payload);
+  return data;
+}
+
+export async function deleteCategory(categoryId) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 150));
-    return MOCK_TAGS;
+    return { ok: true };
   }
-  const { data } = await api.get('/api/tags');
-  return data;
+  await api.delete(`/api/v1/categories/${categoryId}`);
+  return { ok: true };
 }

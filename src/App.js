@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ModalProvider } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
 import MyPageModal from './components/MyPageModal';
+import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
 import Landing from './pages/Landing';
 import './styles/global.css';
@@ -19,26 +20,37 @@ const Editor = lazy(() => import('./pages/Editor'));
 const Create = lazy(() => import('./pages/Create'));
 const Quiz = lazy(() => import('./pages/Quiz'));
 
+// 경로가 바뀌면 key로 ErrorBoundary를 재마운트해, 이전 페이지의 에러 상태를
+// 새 페이지로 끌고 가지 않고 자동으로 회복한다.
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <ErrorBoundary key={location.pathname}>
+      <Suspense fallback={<Loading fullPage />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard-empty" element={<DashboardEmpty />} />
+          <Route path="/directory" element={<Directory />} />
+          <Route path="/directory-empty" element={<DirectoryEmpty />} />
+          <Route path="/editor/:noteId" element={<Editor />} />
+          <Route path="/create" element={<Create />} />
+          <Route path="/create-empty" element={<Create isGuest />} />
+          <Route path="/quiz/:noteId" element={<Quiz />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <ModalProvider>
         <BrowserRouter>
-          <Suspense fallback={<Loading fullPage />}>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/oauth/callback" element={<OAuthCallback />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard-empty" element={<DashboardEmpty />} />
-              <Route path="/directory" element={<Directory />} />
-              <Route path="/directory-empty" element={<DirectoryEmpty />} />
-              <Route path="/editor/:noteId" element={<Editor />} />
-              <Route path="/create" element={<Create />} />
-              <Route path="/create-empty" element={<Create isGuest />} />
-              <Route path="/quiz/:noteId" element={<Quiz />} />
-            </Routes>
-          </Suspense>
+          <AppRoutes />
           <MyPageModal />
         </BrowserRouter>
       </ModalProvider>

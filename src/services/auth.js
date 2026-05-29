@@ -1,6 +1,11 @@
 import api from './api';
 
-const USE_MOCK = import.meta.env.DEV;
+//MUCK 데이터용
+//const USE_MOCK = import.meta.env.DEV;
+
+//실제 서버 API용
+const USE_MOCK = false;
+
 
 const MOCK_USER = {
   id: 1,
@@ -10,21 +15,12 @@ const MOCK_USER = {
   email: 'kimyoungnam@example.com',
 };
 
-export async function loginWithGithub(code) {
-  if (USE_MOCK) {
-    await new Promise((r) => setTimeout(r, 300));
-    return { token: `mock-token-${Date.now()}`, user: MOCK_USER };
-  }
-  const { data } = await api.post('/api/auth/github', { code });
-  return data;
-}
-
 export async function getMe() {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     return MOCK_USER;
   }
-  const { data } = await api.get('/api/auth/me');
+  const { data } = await api.get('/api/v1/users/me');
   return data;
 }
 
@@ -33,12 +29,12 @@ export async function updateProfile(payload) {
     await new Promise((r) => setTimeout(r, 200));
     return { ...MOCK_USER, ...payload };
   }
-  const { data } = await api.patch('/api/auth/me', payload);
+  const { data } = await api.patch('/api/v1/users/me/profile', payload);
   return data;
 }
 
 export async function logoutApi() {
   if (USE_MOCK) return { ok: true };
-  await api.post('/api/auth/logout');
+  await api.post('/api/v1/auth/logout');
   return { ok: true };
 }

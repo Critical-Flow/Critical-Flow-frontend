@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import MyPageModal from './components/MyPageModal';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import OAuthCallback from './pages/OAuthCallback';
 import Dashboard from './pages/Dashboard';
 import DashboardEmpty from './pages/DashboardEmpty';
 import Directory from './pages/Directory';
@@ -21,6 +22,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/oauth/callback" element={<OAuthCallback />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard-empty" element={<DashboardEmpty />} />
             <Route path="/directory" element={<Directory />} />

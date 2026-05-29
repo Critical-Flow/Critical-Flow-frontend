@@ -7,6 +7,8 @@ import EditorDock from '../components/EditorDock';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
+import useToggle from '../hooks/useToggle';
+import useResizable from '../hooks/useResizable';
 import { getNote, saveNote, getFolders, getNotes } from '../services/notes';
 import { startSession, endSession } from '../services/session';
 
@@ -31,8 +33,8 @@ export default function Editor() {
     [note?.folderId],
   );
 
-  const [lsideOpen, setLsideOpen] = useState(false);
-  const [rsideOpen, setRsideOpen] = useState(false);
+  const [lsideOpen, lside] = useToggle(false);
+  const [rsideOpen, rside] = useToggle(false);
   const [viewMode, setViewMode] = useState('wysiwyg');
   const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState('');
@@ -41,8 +43,8 @@ export default function Editor() {
   const [isSaved, setIsSaved] = useState(false);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const resizingRef = useRef(false);
   const milkdownRef = useRef(null);
+  const { startResize } = useResizable({ cssVar: '--rside-width', min: 350, max: 520 });
 
   useEffect(() => {
     if (note) {
@@ -58,26 +60,6 @@ export default function Editor() {
   const handleCommand = (command, payload) => {
     milkdownRef.current?.callCommand(command, payload);
   };
-
-  useEffect(() => {
-    const onMouseMove = (e) => {
-      if (!resizingRef.current) return;
-      const min = 350, max = 520;
-      const next = Math.min(max, Math.max(min, window.innerWidth - e.clientX));
-      document.documentElement.style.setProperty('--rside-width', `${next}px`);
-    };
-    const onMouseUp = () => {
-      if (!resizingRef.current) return;
-      resizingRef.current = false;
-      document.body.style.cursor = '';
-    };
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
-  }, []);
 
   const cycleView = () => {
     if (viewMode === 'wysiwyg') {
@@ -97,8 +79,8 @@ export default function Editor() {
         folderId: note?.folderId,
       };
       const saved = await saveNote(payload);
-      if (lsideOpen) setLsideOpen(false);
-      setRsideOpen(true);
+      if (lsideOpen) lside.off();
+      rside.on();
       setIsSaved(true);
       setTimeout(() => alert('💾 저장되었습니다'), 150);
       if (isNew && saved?.id) {
@@ -190,11 +172,7 @@ export default function Editor() {
         <div
           className="rside-resizer"
           aria-hidden="true"
-          onMouseDown={(e) => {
-            e.preventDefault();
-            resizingRef.current = true;
-            document.body.style.cursor = 'ew-resize';
-          }}
+          onMouseDown={startResize}
         />
         <div className="mode-switch">
           <div className="mode-toggle" role="tablist" aria-label="오른쪽 패널 모드">
@@ -285,8 +263,8 @@ export default function Editor() {
         rsideDisabled={!isSaved}
         viewMode={viewMode}
         isLearning={isLearning}
-        onToggleLside={() => setLsideOpen((v) => !v)}
-        onToggleRside={() => setRsideOpen((v) => !v)}
+        onToggleLside={lside.toggle}
+        onToggleRside={rside.toggle}
         onCycleView={cycleView}
         onSave={handleSave}
         onToggleLearning={handleLearningToggle}

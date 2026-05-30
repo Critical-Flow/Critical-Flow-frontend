@@ -85,6 +85,7 @@ export default function Editor() {
     try {
       const payload = {
         noteId: isNew ? undefined : Number(noteId),
+        noteId: isNew ? undefined : Number(noteId),
         title,
         content: md,
         categoryId: note?.categoryId ?? newCategoryId,
@@ -140,6 +141,8 @@ export default function Editor() {
 
   const noteFolder = folders?.find((f) => f.categoryId === note?.categoryId);
   const folderLabel = noteFolder ? `📁 ${noteFolder.title}` : '📁';
+  const noteFolder = folders?.find((f) => f.categoryId === note?.categoryId);
+  const folderLabel = noteFolder ? `📁 ${noteFolder.title}` : '📁';
 
   return (
     <div className={appClass}>
@@ -163,6 +166,9 @@ export default function Editor() {
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
         <h4>📂 디렉토리</h4>
         <ul>
+          {(folders ?? []).map((f) => (
+            <li key={f.categoryId} className={f.categoryId === note?.categoryId ? 'active' : ''}>
+              📁 {f.title}
           {(folders ?? []).map((f) => (
             <li key={f.categoryId} className={f.categoryId === note?.categoryId ? 'active' : ''}>
               📁 {f.title}

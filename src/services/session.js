@@ -1,6 +1,7 @@
 import api from './api';
 
-const USE_MOCK = import.meta.env.DEV;
+// const USE_MOCK = import.meta.env.DEV;
+const USE_MOCK = false;
 
 export async function startSession() {
   if (USE_MOCK) {

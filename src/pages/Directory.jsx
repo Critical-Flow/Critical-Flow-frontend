@@ -94,7 +94,7 @@ export default function Directory() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <Link to="/editor/new" className="btn-primary-dir">+ 새 노트</Link>
+            <Link to={`/editor/new?categoryId=${activeCategoryId}`} className="btn-primary-dir">+ 새 노트</Link>
           </div>
         </div>
 

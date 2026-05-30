@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
@@ -16,9 +16,11 @@ import { startSession, endSession } from '../services/session';
 
 export default function Editor() {
   const { noteId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const isNew = noteId === 'new';
+  const newCategoryId = isNew ? Number(searchParams.get('categoryId') ?? 0) : 0;
 
   const {
     data: note,
@@ -84,7 +86,7 @@ export default function Editor() {
         noteId: isNew ? undefined : Number(noteId),
         title,
         content: md,
-        categoryId: note?.categoryId ?? 0,
+        categoryId: note?.categoryId ?? newCategoryId,
         sessionId: sessionId ?? 0,
       };
       const saved = await saveNote(payload, user?.userId);

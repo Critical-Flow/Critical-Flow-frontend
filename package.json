@@ -5,6 +5,7 @@
   "dependencies": {
     "@milkdown/core": "^7.21.1",
     "@milkdown/ctx": "^7.21.1",
+    "@milkdown/plugin-listener": "^7.21.1",
     "@milkdown/preset-commonmark": "^7.21.1",
     "@milkdown/react": "^7.21.1",
     "@milkdown/transformer": "^7.21.1",

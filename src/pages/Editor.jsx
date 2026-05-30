@@ -261,6 +261,7 @@ export default function Editor() {
         lsideOpen={lsideOpen}
         rsideOpen={rsideOpen}
         rsideDisabled={!isSaved}
+        saveDisabled={!md.trim()}
         viewMode={viewMode}
         isLearning={isLearning}
         onToggleLside={lside.toggle}

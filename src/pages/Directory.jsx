@@ -68,7 +68,8 @@ export default function Directory() {
     if (!window.confirm('노트를 삭제하시겠어요?')) return;
     try {
       await deleteNote(noteId, user?.userId);
-      refetchNotes();
+      await refetchNotes();
+      if (paginated.length === 1 && page > 1) setPage((p) => p - 1);
     } catch {
       alert('삭제에 실패했어요.');
     }

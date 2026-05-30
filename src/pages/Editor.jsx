@@ -39,7 +39,9 @@ export default function Editor() {
   const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState('');
   const [title, setTitle] = useState('');
-  const [rsideMode, setRsideMode] = useState('tutor');
+  // 현재는 AI 튜터 패널만 사용한다. 퀴즈 패널을 다시 쓰려면 setter를 복구하고
+  // 아래 mode-switch 전환 버튼 주석을 해제하면 된다.
+  const [rsideMode] = useState('tutor');
   const [isSaved, setIsSaved] = useState(false);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
@@ -174,6 +176,7 @@ export default function Editor() {
           aria-hidden="true"
           onMouseDown={startResize}
         />
+        {/* 퀴즈/AI 튜터 전환 버튼 — 현재는 AI 튜터만 사용하므로 숨김 (복구 시 setRsideMode도 복구)
         <div className="mode-switch">
           <div className="mode-toggle" role="tablist" aria-label="오른쪽 패널 모드">
             <button
@@ -192,6 +195,7 @@ export default function Editor() {
             >AI 튜터</button>
           </div>
         </div>
+        */}
 
         <section className="quiz-panel" aria-hidden={rsideMode !== 'quiz'}>
           <div className="qz-title">AI 퀴즈</div>

@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Editor, rootCtx, defaultValueCtx, commandsCtx, editorStateCtx, serializerCtx } from '@milkdown/core';
+import { Editor, rootCtx, defaultValueCtx, commandsCtx } from '@milkdown/core';
 import { commonmark } from '@milkdown/preset-commonmark';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
 import './MilkdownEditor.css';
@@ -17,13 +17,6 @@ const MilkdownEditor = forwardRef(function MilkdownEditor({ value, onChange }, r
       editorRef.current?.action((ctx) => {
         ctx.get(commandsCtx).call(command.key, payload);
       });
-    },
-    getMarkdown() {
-      return editorRef.current?.action((ctx) => {
-        const state = ctx.get(editorStateCtx);
-        const serializer = ctx.get(serializerCtx);
-        return serializer(state.doc);
-      }) ?? '';
     },
   }));
 

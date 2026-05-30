@@ -80,13 +80,10 @@ export default function Editor() {
 
   const handleSave = async () => {
     try {
-      const content = viewMode === 'wysiwyg'
-        ? (milkdownRef.current?.getMarkdown() ?? md)
-        : md;
       const payload = {
         noteId: isNew ? undefined : Number(noteId),
         title,
-        content,
+        content: md,
         categoryId: note?.categoryId ?? 0,
         sessionId: sessionId ?? 0,
       };

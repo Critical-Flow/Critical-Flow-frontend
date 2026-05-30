@@ -23,6 +23,14 @@ export function formatRelativeTime(value) {
   });
 }
 
+export function formatTime(value) {
+  const target = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(target.getTime())) return '';
+  const hh = String(target.getHours()).padStart(2, '0');
+  const mm = String(target.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
 export function formatDuration(minutes) {
   if (!Number.isFinite(minutes) || minutes < 0) return '';
   if (minutes < 60) return `${minutes}분`;

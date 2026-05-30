@@ -2,6 +2,7 @@ export default function EditorDock({
   lsideOpen,
   rsideOpen,
   rsideDisabled,
+  saveDisabled,
   viewMode,
   isLearning,
   onToggleLside,
@@ -37,7 +38,7 @@ export default function EditorDock({
         <span className="dock-icon dock-icon--code">&lt;/&gt;</span>
         <span className="tip">원본 마크다운 보기</span>
       </button>
-      <button onClick={onSave} title="저장">
+      <button onClick={onSave} title="저장" disabled={saveDisabled}>
         <span className="dock-icon">💾</span>
         <span className="tip">저장 / 전송</span>
       </button>

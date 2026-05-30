@@ -10,7 +10,7 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useDebounce from '../hooks/useDebounce';
-import { getNotes, getFolders, deleteCategory, updateCategory } from '../services/notes';
+import { getNotes, getFolders, deleteCategory, updateCategory, deleteNote } from '../services/notes';
 import './Directory.css';
 
 export default function Directory() {
@@ -26,7 +26,7 @@ export default function Directory() {
     error: notesError,
     refetch: refetchNotes,
   } = useFetch(
-    () => getNotes({ userId: user?.userId }),
+    () => user?.userId ? getNotes({ userId: user.userId }) : Promise.resolve([]),
     [user?.userId],
   );
 
@@ -54,6 +54,16 @@ export default function Directory() {
       await deleteCategory(categoryId);
       if (activeCategoryId === categoryId) setActiveCategoryId(0);
       refetchFolders();
+    } catch {
+      alert('삭제에 실패했어요.');
+    }
+  };
+
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm('노트를 삭제하시겠어요?')) return;
+    try {
+      await deleteNote(noteId, user?.userId);
+      refetchNotes();
     } catch {
       alert('삭제에 실패했어요.');
     }
@@ -119,6 +129,7 @@ export default function Directory() {
                     tag={getCategoryTitle(note.categoryId)}
                     updatedAt={note.updatedAt}
                     readMinutes={note.readMinutes}
+                    onDelete={() => handleDeleteNote(note.noteId)}
                   />
                 ))}
               </div>

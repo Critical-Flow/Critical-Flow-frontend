@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
 import EditorToolbar from '../components/EditorToolbar';
@@ -16,6 +17,7 @@ import { startSession, endSession } from '../services/session';
 export default function Editor() {
   const { noteId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isNew = noteId === 'new';
 
   const {
@@ -24,14 +26,17 @@ export default function Editor() {
     error: noteError,
     refetch: refetchNote,
   } = useFetch(
-    () => (isNew ? Promise.resolve(null) : getNote(noteId)),
-    [noteId, isNew],
+    () => (isNew ? Promise.resolve(null) : getNote(noteId, user?.userId)),
+    [noteId, isNew, user?.userId],
   );
 
   const { data: folders } = useFetch(getFolders);
-  const { data: folderNotes } = useFetch(
-    () => (note?.categoryId != null ? getNotes({ categoryId: note.categoryId }) : Promise.resolve([])),
-    [note?.categoryId],
+  const { data: allNotes } = useFetch(
+    () => user?.userId ? getNotes({ userId: user.userId }) : Promise.resolve([]),
+    [user?.userId],
+  );
+  const folderNotes = (allNotes ?? []).filter(
+    (n) => n.categoryId === note?.categoryId,
   );
 
   const [lsideOpen, lside] = useToggle(false);
@@ -75,13 +80,17 @@ export default function Editor() {
 
   const handleSave = async () => {
     try {
+      const content = viewMode === 'wysiwyg'
+        ? (milkdownRef.current?.getMarkdown() ?? md)
+        : md;
       const payload = {
         noteId: isNew ? undefined : Number(noteId),
         title,
-        content: md,
-        categoryId: note?.categoryId,
+        content,
+        categoryId: note?.categoryId ?? 0,
+        sessionId: sessionId ?? 0,
       };
-      const saved = await saveNote(payload);
+      const saved = await saveNote(payload, user?.userId);
       if (lsideOpen) lside.off();
       rside.on();
       setIsSaved(true);
@@ -97,7 +106,7 @@ export default function Editor() {
   const handleLearningToggle = async () => {
     try {
       if (!isLearning) {
-        const { sessionId: sid } = await startSession({ noteId: isNew ? null : Number(noteId) });
+        const { sessionId: sid } = await startSession();
         setSessionId(sid);
         setIsLearning(true);
       } else {

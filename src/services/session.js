@@ -2,24 +2,20 @@ import api from './api';
 
 const USE_MOCK = import.meta.env.DEV;
 
-export async function startSession(payload) {
+export async function startSession() {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return { sessionId: Date.now(), startedAt: new Date().toISOString() };
+    return { sessionId: Date.now(), startTime: new Date().toISOString() };
   }
-  const { data } = await api.post('/api/sessions/start', payload);
+  const { data } = await api.post('/api/v1/sessions');
   return data;
 }
 
-export async function endSession(sessionId, payload) {
+export async function endSession(sessionId) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return {
-      sessionId,
-      endedAt: new Date().toISOString(),
-      durationMinutes: payload?.durationMinutes ?? 0,
-    };
+    return { sessionId, endTime: new Date().toISOString() };
   }
-  const { data } = await api.post(`/api/sessions/${sessionId}/end`, payload);
+  const { data } = await api.post(`/api/v1/sessions/${sessionId}/end`);
   return data;
 }

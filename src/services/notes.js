@@ -68,11 +68,12 @@ export async function saveNote(note, userId) {
     await new Promise((r) => setTimeout(r, 200));
     return { noteId: note.noteId ?? Date.now(), ...note, updatedAt: new Date().toISOString() };
   }
-  if (note.noteId) {
-    const { data } = await api.put(`/api/notes/${note.noteId}`, note, { params: { userId } });
+  const { noteId, ...body } = note;
+  if (noteId) {
+    const { data } = await api.put(`/api/notes/${noteId}`, body, { params: { userId } });
     return data;
   }
-  const { data } = await api.post('/api/notes', note, { params: { userId } });
+  const { data } = await api.post('/api/notes', body, { params: { userId } });
   return data;
 }
 

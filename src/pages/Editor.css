@@ -463,6 +463,8 @@
 }
 
 .tutor-head .title {
+  flex: 1;
+  text-align: center;
   font-weight: 800;
   color: #1F6F5F;
 }
@@ -471,6 +473,67 @@
   color: #1F6F5F;
   font-size: 14px;
   cursor: pointer;
+}
+
+.tutor-icon-btn {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #dfe7e4;
+  color: #1F6F5F;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.tutor-icon-btn:hover {
+  background: #cfdbd6;
+}
+
+/* AI 튜터 대화 목록 (햄버거 뷰) */
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.conv-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid transparent;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.conv-item:hover {
+  background: #f3f6f5;
+}
+
+.conv-item.active {
+  border-color: #2FA084;
+}
+
+.conv-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a3d32;
+}
+
+.conv-time {
+  font-size: 12px;
+  color: #9aa3a0;
 }
 
 .chat-window {
@@ -483,6 +546,13 @@
   gap: 12px;
   flex: 1;
   overflow: auto;
+}
+
+.chat-empty {
+  margin: auto;
+  color: #9aa3a0;
+  font-size: 13px;
+  text-align: center;
 }
 
 .bubble {

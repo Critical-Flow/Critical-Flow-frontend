@@ -4,6 +4,7 @@ import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
 import EditorToolbar from '../components/EditorToolbar';
 import EditorDock from '../components/EditorDock';
+import TutorPanel from '../components/TutorPanel';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
@@ -220,30 +221,7 @@ export default function Editor() {
           </div>
         </section>
 
-        <section className="tutor-panel" aria-hidden={rsideMode !== 'tutor'}>
-          <div className="tutor-head">
-            <span className="title">AI Tutor</span>
-            <span className="back-icon">‹</span>
-          </div>
-          <div className="chat-window">
-            <div className="bubble left">
-              Hello there? sup?
-              <span className="time">19:30</span>
-            </div>
-            <div className="bubble right">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              <span className="time">19:30</span>
-            </div>
-            <div className="bubble right">
-              PINGGG !!!
-              <span className="time">19:32</span>
-            </div>
-          </div>
-          <div className="chat-input">
-            <input type="text" placeholder="type something" />
-            <button type="button">↻</button>
-          </div>
-        </section>
+        <TutorPanel noteId={noteId} hidden={rsideMode !== 'tutor'} />
       </aside>
 
       <div className={wsClass}>

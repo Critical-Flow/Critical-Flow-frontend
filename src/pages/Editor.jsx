@@ -29,8 +29,8 @@ export default function Editor() {
 
   const { data: folders } = useFetch(getFolders);
   const { data: folderNotes } = useFetch(
-    () => (note?.folderId != null ? getNotes({ folderId: note.folderId }) : Promise.resolve([])),
-    [note?.folderId],
+    () => (note?.categoryId != null ? getNotes({ categoryId: note.categoryId }) : Promise.resolve([])),
+    [note?.categoryId],
   );
 
   const [lsideOpen, lside] = useToggle(false);
@@ -73,18 +73,18 @@ export default function Editor() {
   const handleSave = async () => {
     try {
       const payload = {
-        id: isNew ? undefined : Number(noteId),
+        noteId: isNew ? undefined : Number(noteId),
         title,
         content: md,
-        folderId: note?.folderId,
+        categoryId: note?.categoryId,
       };
       const saved = await saveNote(payload);
       if (lsideOpen) lside.off();
       rside.on();
       setIsSaved(true);
       setTimeout(() => alert('💾 저장되었습니다'), 150);
-      if (isNew && saved?.id) {
-        navigate(`/editor/${saved.id}`, { replace: true });
+      if (isNew && saved?.noteId) {
+        navigate(`/editor/${saved.noteId}`, { replace: true });
       }
     } catch {
       alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
@@ -126,8 +126,8 @@ export default function Editor() {
     );
   }
 
-  const noteFolder = folders?.find((f) => f.id === note?.folderId);
-  const folderLabel = noteFolder ? `${noteFolder.icon} ${noteFolder.name}` : '📁';
+  const noteFolder = folders?.find((f) => f.categoryId === note?.categoryId);
+  const folderLabel = noteFolder ? `📁 ${noteFolder.title}` : '📁';
 
   return (
     <div className={appClass}>
@@ -151,16 +151,16 @@ export default function Editor() {
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
         <h4>📂 디렉토리</h4>
         <ul>
-          {(folders ?? []).filter((f) => f.id !== 0).map((f) => (
-            <li key={f.id} className={f.id === note?.folderId ? 'active' : ''}>
-              {f.icon} {f.name}
+          {(folders ?? []).map((f) => (
+            <li key={f.categoryId} className={f.categoryId === note?.categoryId ? 'active' : ''}>
+              📁 {f.title}
             </li>
           ))}
         </ul>
         <h4 style={{ marginTop: '22px' }}>📄 파일</h4>
         <ul>
           {(folderNotes ?? []).map((n) => (
-            <li key={n.id} className={n.id === Number(noteId) ? 'active' : ''}>
+            <li key={n.noteId} className={n.noteId === Number(noteId) ? 'active' : ''}>
               {n.title}
             </li>
           ))}

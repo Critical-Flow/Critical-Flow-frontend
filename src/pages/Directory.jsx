@@ -18,6 +18,8 @@ export default function Directory() {
   const [search, setSearch] = useState('');
   const [activeCategoryId, setActiveCategoryId] = useState(0);
   const [editingFolder, setEditingFolder] = useState(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 12;
   const debouncedSearch = useDebounce(search, 300);
 
   const {
@@ -47,6 +49,9 @@ export default function Directory() {
   const filtered = folderNotes.filter((note) =>
     note.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
   );
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleDeleteFolder = async (categoryId) => {
     if (!window.confirm('폴더를 삭제하시겠어요?')) return;
@@ -92,7 +97,7 @@ export default function Directory() {
               className="search-input"
               placeholder="🔍 노트 검색..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             />
             <Link to={`/editor/new?categoryId=${activeCategoryId}`} className="btn-primary-dir">+ 새 노트</Link>
           </div>
@@ -107,7 +112,7 @@ export default function Directory() {
                 icon={icon}
                 name={title}
                 active={activeCategoryId === categoryId}
-                onClick={() => setActiveCategoryId(categoryId)}
+                onClick={() => { setActiveCategoryId(categoryId); setPage(1); }}
                 onEdit={categoryId !== 0 ? () => setEditingFolder({ categoryId, title, description }) : undefined}
                 onDelete={categoryId !== 0 ? () => handleDeleteFolder(categoryId) : undefined}
               />
@@ -120,19 +125,42 @@ export default function Directory() {
               <ErrorMessage message="노트를 불러오지 못했어요." onRetry={refetchNotes} />
             )}
             {!notesLoading && !notesError && (
-              <div className="notes-grid">
-                {filtered.map((note) => (
-                  <NoteCard
-                    key={note.noteId}
-                    id={note.noteId}
-                    title={note.title}
-                    tag={getCategoryTitle(note.categoryId)}
-                    updatedAt={note.updatedAt}
-                    readMinutes={note.readMinutes}
-                    onDelete={() => handleDeleteNote(note.noteId)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="notes-grid">
+                  {paginated.map((note) => (
+                    <NoteCard
+                      key={note.noteId}
+                      id={note.noteId}
+                      title={note.title}
+                      tag={getCategoryTitle(note.categoryId)}
+                      updatedAt={note.updatedAt}
+                      readMinutes={note.readMinutes}
+                      onDelete={() => handleDeleteNote(note.noteId)}
+                    />
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="page-btn"
+                      onClick={() => setPage((p) => p - 1)}
+                      disabled={page === 1}
+                    >‹</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                      <button
+                        key={p}
+                        className={`page-btn${p === page ? ' active' : ''}`}
+                        onClick={() => setPage(p)}
+                      >{p}</button>
+                    ))}
+                    <button
+                      className="page-btn"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={page === totalPages}
+                    >›</button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

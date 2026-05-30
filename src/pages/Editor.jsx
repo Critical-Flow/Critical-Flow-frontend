@@ -172,11 +172,15 @@ export default function Editor() {
         <h4 style={{ marginTop: '22px' }}>📄 파일</h4>
         <ul>
           {(folderNotes ?? []).map((n) => (
-            <li key={n.noteId} className={n.noteId === Number(noteId) ? 'active' : ''}>
+            <li
+              key={n.noteId}
+              className={n.noteId === Number(noteId) ? 'active' : ''}
+              onClick={() => navigate(`/editor/${n.noteId}`)}
+              style={{ cursor: 'pointer' }}
+            >
               {n.title}
             </li>
           ))}
-          <li>+ 새 파일</li>
         </ul>
       </aside>
 

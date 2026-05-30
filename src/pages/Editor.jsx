@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
@@ -17,6 +17,7 @@ import { startSession, endSession } from '../services/session';
 export default function Editor() {
   const { noteId } = useParams();
   const [searchParams] = useSearchParams();
+  const { state: locationState } = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const isNew = noteId === 'new';
@@ -42,7 +43,7 @@ export default function Editor() {
   );
 
   const [lsideOpen, lside] = useToggle(false);
-  const [rsideOpen, rside] = useToggle(false);
+  const [rsideOpen, rside] = useToggle(locationState?.openRside ?? false);
   const [viewMode, setViewMode] = useState('wysiwyg');
   const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState('');
@@ -95,7 +96,7 @@ export default function Editor() {
       setIsSaved(true);
       setTimeout(() => alert('💾 저장되었습니다'), 150);
       if (isNew && saved?.noteId) {
-        navigate(`/editor/${saved.noteId}`, { replace: true });
+        navigate(`/editor/${saved.noteId}`, { replace: true, state: { openRside: true } });
       }
     } catch {
       alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');

@@ -9,7 +9,7 @@ export default function NoteCard({ id, title, tag, updatedAt, readMinutes }) {
       <h3>{title}</h3>
       <div className="meta">
         <span>{formatRelativeTime(updatedAt)}</span>
-        <span>📖 {formatDuration(readMinutes)}</span>
+        {readMinutes && <span>📖 {formatDuration(readMinutes)}</span>}
       </div>
     </Link>
   );

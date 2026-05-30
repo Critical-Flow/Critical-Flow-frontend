@@ -1,3 +1,83 @@
+.folder-menu {
+  position: relative;
+  margin-left: auto;
+}
+
+.folder-menu-btn {
+  background: none;
+  border: none;
+  color: var(--sub);
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.folder-menu-btn:hover {
+  background: var(--line);
+}
+
+.folder-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  min-width: 80px;
+  overflow: hidden;
+}
+
+.folder-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.folder-dropdown button:hover {
+  background: var(--bg-base);
+}
+
+.folder-item--editing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+}
+
+.folder-edit-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  width: auto;
+}
+
+.folder-edit-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.folder-edit-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  color: var(--sub);
+}
+
 .dir-container {
   max-width: 1180px;
   width: 100%;

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
 import EditorToolbar from '../components/EditorToolbar';
@@ -15,8 +16,12 @@ import { startSession, endSession } from '../services/session';
 
 export default function Editor() {
   const { noteId } = useParams();
+  const [searchParams] = useSearchParams();
+  const { state: locationState } = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isNew = noteId === 'new';
+  const newCategoryId = isNew ? Number(searchParams.get('categoryId') ?? 0) : 0;
 
   const {
     data: note,
@@ -24,18 +29,21 @@ export default function Editor() {
     error: noteError,
     refetch: refetchNote,
   } = useFetch(
-    () => (isNew ? Promise.resolve(null) : getNote(noteId)),
-    [noteId, isNew],
+    () => (isNew ? Promise.resolve(null) : getNote(noteId, user?.userId)),
+    [noteId, isNew, user?.userId],
   );
 
   const { data: folders } = useFetch(getFolders);
-  const { data: folderNotes } = useFetch(
-    () => (note?.folderId != null ? getNotes({ folderId: note.folderId }) : Promise.resolve([])),
-    [note?.folderId],
+  const { data: allNotes } = useFetch(
+    () => user?.userId ? getNotes({ userId: user.userId }) : Promise.resolve([]),
+    [user?.userId],
+  );
+  const folderNotes = (allNotes ?? []).filter(
+    (n) => n.categoryId === note?.categoryId,
   );
 
   const [lsideOpen, lside] = useToggle(false);
-  const [rsideOpen, rside] = useToggle(false);
+  const [rsideOpen, rside] = useToggle(locationState?.openRside ?? false);
   const [viewMode, setViewMode] = useState('wysiwyg');
   const [remountKey, setRemountKey] = useState(0);
   const [md, setMd] = useState('');
@@ -76,18 +84,19 @@ export default function Editor() {
   const handleSave = async () => {
     try {
       const payload = {
-        id: isNew ? undefined : Number(noteId),
+        noteId: isNew ? undefined : Number(noteId),
         title,
         content: md,
-        folderId: note?.folderId,
+        categoryId: note?.categoryId ?? newCategoryId,
+        sessionId: sessionId ?? 0,
       };
-      const saved = await saveNote(payload);
+      const saved = await saveNote(payload, user?.userId);
       if (lsideOpen) lside.off();
       rside.on();
       setIsSaved(true);
       setTimeout(() => alert('💾 저장되었습니다'), 150);
-      if (isNew && saved?.id) {
-        navigate(`/editor/${saved.id}`, { replace: true });
+      if (isNew && saved?.noteId) {
+        navigate(`/editor/${saved.noteId}`, { replace: true, state: { openRside: true } });
       }
     } catch {
       alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
@@ -97,7 +106,7 @@ export default function Editor() {
   const handleLearningToggle = async () => {
     try {
       if (!isLearning) {
-        const { sessionId: sid } = await startSession({ noteId: isNew ? null : Number(noteId) });
+        const { sessionId: sid } = await startSession();
         setSessionId(sid);
         setIsLearning(true);
       } else {
@@ -129,8 +138,8 @@ export default function Editor() {
     );
   }
 
-  const noteFolder = folders?.find((f) => f.id === note?.folderId);
-  const folderLabel = noteFolder ? `${noteFolder.icon} ${noteFolder.name}` : '📁';
+  const noteFolder = folders?.find((f) => f.categoryId === note?.categoryId);
+  const folderLabel = noteFolder ? `📁 ${noteFolder.title}` : '📁';
 
   return (
     <div className={appClass}>
@@ -154,20 +163,24 @@ export default function Editor() {
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
         <h4>📂 디렉토리</h4>
         <ul>
-          {(folders ?? []).filter((f) => f.id !== 0).map((f) => (
-            <li key={f.id} className={f.id === note?.folderId ? 'active' : ''}>
-              {f.icon} {f.name}
+          {(folders ?? []).map((f) => (
+            <li key={f.categoryId} className={f.categoryId === note?.categoryId ? 'active' : ''}>
+              📁 {f.title}
             </li>
           ))}
         </ul>
         <h4 style={{ marginTop: '22px' }}>📄 파일</h4>
         <ul>
           {(folderNotes ?? []).map((n) => (
-            <li key={n.id} className={n.id === Number(noteId) ? 'active' : ''}>
+            <li
+              key={n.noteId}
+              className={n.noteId === Number(noteId) ? 'active' : ''}
+              onClick={() => navigate(`/editor/${n.noteId}`)}
+              style={{ cursor: 'pointer' }}
+            >
               {n.title}
             </li>
           ))}
-          <li>+ 새 파일</li>
         </ul>
       </aside>
 

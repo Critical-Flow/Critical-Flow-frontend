@@ -138,6 +138,51 @@
   text-decoration: underline;
 }
 
+/* 표 (GFM) */
+.milkdown-wrapper .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 14px 0;
+  font-size: 14px;
+}
+
+.milkdown-wrapper .ProseMirror th,
+.milkdown-wrapper .ProseMirror td {
+  border: 1px solid #d0d7d4;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.milkdown-wrapper .ProseMirror th {
+  background: #C5EEE0;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.milkdown-wrapper .ProseMirror tr:nth-child(even) td {
+  background: #f6faf8;
+}
+
+/* 체크박스 목록 (GFM task list) */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"] {
+  list-style: none;
+  margin-left: -18px;
+}
+
+.milkdown-wrapper .ProseMirror li[data-item-type="task"] > label {
+  margin-right: 6px;
+}
+
+.milkdown-wrapper .ProseMirror input[type="checkbox"] {
+  accent-color: #2FA084;
+  cursor: pointer;
+}
+
+/* 취소선 (GFM) */
+.milkdown-wrapper .ProseMirror del {
+  color: #9ca3af;
+}
+
 /* 빈 문서 플레이스홀더 */
 .milkdown-wrapper .ProseMirror.ProseMirror-empty::before {
   content: '마크다운을 작성하세요...';

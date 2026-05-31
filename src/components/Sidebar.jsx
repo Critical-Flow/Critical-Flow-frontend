@@ -30,6 +30,7 @@ export default function Sidebar({ isGuest = false }) {
       </nav>
       <div className="s-bottom">
         <div className="s-user">{user?.name ?? '게스트'}</div>
+        {user?.affiliation && <div className="s-affiliation">{user.affiliation}</div>}
         <button className="s-mypage-btn" onClick={() => setMyPageOpen(true)}>
           👤 마이페이지
         </button>

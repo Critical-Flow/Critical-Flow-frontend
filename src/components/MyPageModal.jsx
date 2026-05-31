@@ -3,11 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
 import { logoutApi, updateProfile, deleteAccount } from '../services/auth';
+import { reembedNotes } from '../services/notes';
 import './MyPageModal.css';
 
 function UserInfoTab({ user, onProfileUpdated }) {
   const [affiliation, setAffiliation] = useState(user?.affiliation ?? '');
   const [isSaving, setIsSaving] = useState(false);
+  const [isReembedding, setIsReembedding] = useState(false);
+
+  const handleReembed = async () => {
+    setIsReembedding(true);
+    try {
+      await reembedNotes();
+      alert('✅ DB 복구가 완료되었습니다.');
+    } catch {
+      alert('복구에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsReembedding(false);
+    }
+  };
 
   const githubLabel = user ? `GitHub · @${user.name}` : 'GitHub · 미연결';
   const isLinked = Boolean(user);
@@ -51,6 +65,15 @@ function UserInfoTab({ user, onProfileUpdated }) {
           />
           <button className="mpm-btn-sm" onClick={handleSave} disabled={isSaving}>
             {isSaving ? '저장 중' : '저장'}
+          </button>
+        </div>
+      </div>
+      <div className="mpm-row">
+        <div className="mpm-row-label">DB 복구</div>
+        <div className="mpm-row-body">
+          <span className="mpm-value" style={{ fontSize: '13px', color: 'var(--sub)' }}>DB가 꼬일 경우 누르세요</span>
+          <button className="mpm-btn-sm" onClick={handleReembed} disabled={isReembedding}>
+            {isReembedding ? '복구 중...' : '복구'}
           </button>
         </div>
       </div>

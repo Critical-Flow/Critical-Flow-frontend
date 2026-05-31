@@ -121,3 +121,12 @@ export async function deleteCategory(categoryId) {
   await api.delete(`/api/v1/categories/${categoryId}`);
   return { ok: true };
 }
+
+export async function reembedNotes() {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 500));
+    return { ok: true };
+  }
+  const { data } = await api.post('/api/notes/reembed');
+  return data;
+}

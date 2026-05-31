@@ -51,7 +51,7 @@ export default function Editor() {
   // 현재는 AI 튜터 패널만 사용한다. 퀴즈 패널을 다시 쓰려면 setter를 복구하고
   // 아래 mode-switch 전환 버튼 주석을 해제하면 된다.
   const [rsideMode] = useState('tutor');
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(!isNew);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const milkdownRef = useRef(null);

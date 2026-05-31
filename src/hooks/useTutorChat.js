@@ -26,7 +26,7 @@ export default function useTutorChat(noteId) {
           ? {
               ...c,
               messages: [...c.messages, message],
-              title: c.messages.length === 0 && message.role === 'user'
+              title: c.messages.filter((m) => m.role === 'user').length === 0 && message.role === 'user'
                 ? message.content.slice(0, 20)
                 : c.title,
               updatedAt: new Date().toISOString(),

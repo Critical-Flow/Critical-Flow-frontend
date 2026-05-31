@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { Editor, rootCtx, defaultValueCtx, commandsCtx } from '@milkdown/core';
 import { commonmark } from '@milkdown/preset-commonmark';
+import { gfm } from '@milkdown/preset-gfm';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
 import './MilkdownEditor.css';
 
@@ -35,6 +36,7 @@ const MilkdownEditor = forwardRef(function MilkdownEditor({ value, onChange }, r
         });
       })
       .use(commonmark)
+      .use(gfm)
       .use(listener)
       .create()
       .then((editor) => {

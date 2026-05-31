@@ -17,7 +17,8 @@
   min-height: 100%;
   outline: none;
   background: transparent;
-  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', sans-serif;
   font-size: 15px;
   line-height: 1.8;
   color: #374151;
@@ -136,6 +137,77 @@
 .milkdown-wrapper .ProseMirror a {
   color: #2FA084;
   text-decoration: underline;
+}
+
+/* 표 (GFM) */
+.milkdown-wrapper .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 14px 0;
+  font-size: 14px;
+}
+
+.milkdown-wrapper .ProseMirror th,
+.milkdown-wrapper .ProseMirror td {
+  border: 1px solid #d0d7d4;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.milkdown-wrapper .ProseMirror th {
+  background: #C5EEE0;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.milkdown-wrapper .ProseMirror tr:nth-child(even) td {
+  background: #f6faf8;
+}
+
+/* 체크박스 목록 (GFM task list)
+   Milkdown은 <input>을 만들지 않고 li[data-checked]만 출력하므로 박스를 직접 그린다. */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"] {
+  list-style: none;
+  position: relative;
+  padding-left: 28px;
+}
+
+/* 체크박스 박스 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1.5px solid #9aa3a0;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* 체크된 상태 — 채움 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"][data-checked="true"]::before {
+  background: #2FA084;
+  border-color: #2FA084;
+}
+
+/* 체크된 상태 — 체크 표시 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"][data-checked="true"]::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0.45em;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: translate(0, 3px) rotate(45deg);
+}
+
+/* 취소선 (GFM) */
+.milkdown-wrapper .ProseMirror del {
+  color: #9ca3af;
 }
 
 /* 빈 문서 플레이스홀더 */

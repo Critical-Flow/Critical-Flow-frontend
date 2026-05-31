@@ -31,6 +31,7 @@ function UserInfoTab({ user, onProfileUpdated }) {
     try {
       const updated = await updateProfile({ affiliation });
       onProfileUpdated(updated);
+      alert('✅ 저장되었습니다.');
     } catch {
       alert('저장에 실패했어요.');
     } finally {

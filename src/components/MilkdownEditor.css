@@ -163,19 +163,45 @@
   background: #f6faf8;
 }
 
-/* 체크박스 목록 (GFM task list) */
+/* 체크박스 목록 (GFM task list)
+   Milkdown은 <input>을 만들지 않고 li[data-checked]만 출력하므로 박스를 직접 그린다. */
 .milkdown-wrapper .ProseMirror li[data-item-type="task"] {
   list-style: none;
-  margin-left: -18px;
+  position: relative;
+  padding-left: 28px;
 }
 
-.milkdown-wrapper .ProseMirror li[data-item-type="task"] > label {
-  margin-right: 6px;
+/* 체크박스 박스 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1.5px solid #9aa3a0;
+  border-radius: 4px;
+  background: #fff;
 }
 
-.milkdown-wrapper .ProseMirror input[type="checkbox"] {
-  accent-color: #2FA084;
-  cursor: pointer;
+/* 체크된 상태 — 채움 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"][data-checked="true"]::before {
+  background: #2FA084;
+  border-color: #2FA084;
+}
+
+/* 체크된 상태 — 체크 표시 */
+.milkdown-wrapper .ProseMirror li[data-item-type="task"][data-checked="true"]::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0.45em;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: translate(0, 3px) rotate(45deg);
 }
 
 /* 취소선 (GFM) */

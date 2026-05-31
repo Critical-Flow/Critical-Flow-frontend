@@ -1,67 +1,96 @@
-import { useState, useCallback } from 'react';
-import { sendMessage } from '../services/tutor';
+import { useState, useCallback, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { startConversation, sendTutorMessage } from '../services/tutor';
 
-function createConversation() {
-  return { id: crypto.randomUUID(), title: '새 대화', messages: [], updatedAt: new Date().toISOString() };
-}
-
-function makeMessage(role, content, timestamp) {
-  return { id: crypto.randomUUID(), role, content, timestamp: timestamp ?? new Date().toISOString() };
+function makeMessage(role, content) {
+  return { id: crypto.randomUUID(), role, content, timestamp: new Date().toISOString() };
 }
 
 // AI 튜터의 여러 대화를 관리한다.
-// 하나의 활성 대화(activeId)에 메시지를 주고받고, 대화를 새로 만들거나 전환할 수 있다.
+// 대화 시작 시 백엔드에서 conversationId를 발급받고, 메시지 전송에 사용한다.
+// 대화 목록은 세션 내 로컬 상태로 유지된다 (GET /api/v1/conversations 미지원).
 export default function useTutorChat(noteId) {
-  const [conversations, setConversations] = useState(() => [createConversation()]);
-  const [activeId, setActiveId] = useState(() => conversations[0].id);
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState([]);
+  const [activeId, setActiveId] = useState(null);
   const [isSending, setIsSending] = useState(false);
 
+  const isValidNoteId = noteId && noteId !== 'new';
   const active = conversations.find((c) => c.id === activeId);
   const messages = active?.messages ?? [];
 
-  // 활성 대화에만 메시지를 덧붙인다. (첫 사용자 메시지면 제목도 갱신)
-  const appendToActive = useCallback(
-    (message, { asTitle = false } = {}) => {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeId
-            ? {
-                ...c,
-                messages: [...c.messages, message],
-                title: asTitle && c.messages.length === 0 ? message.content.slice(0, 20) : c.title,
-                updatedAt: new Date().toISOString(),
-              }
-            : c,
-        ),
-      );
-    },
-    [activeId],
-  );
+  const appendToActive = useCallback((convId, message) => {
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === convId
+          ? {
+              ...c,
+              messages: [...c.messages, message],
+              title: c.messages.length === 0 && message.role === 'user'
+                ? message.content.slice(0, 20)
+                : c.title,
+              updatedAt: new Date().toISOString(),
+            }
+          : c,
+      ),
+    );
+  }, []);
+
+  const newConversation = useCallback(async () => {
+    if (!isValidNoteId || !user?.userId) return;
+    try {
+      const conv = await startConversation({ noteId: Number(noteId), userId: user.userId });
+      const localConv = {
+        id: String(conv.conversationId),
+        conversationId: conv.conversationId,
+        title: '새 대화',
+        messages: conv.firstQuestion ? [makeMessage('assistant', conv.firstQuestion)] : [],
+        updatedAt: conv.createdAt,
+      };
+      setConversations((prev) => [localConv, ...prev]);
+      setActiveId(localConv.id);
+    } catch {
+      const localConv = {
+        id: crypto.randomUUID(),
+        conversationId: null,
+        title: '새 대화',
+        messages: [makeMessage('assistant', '대화를 시작하지 못했어요. 잠시 후 다시 시도해주세요.')],
+        updatedAt: new Date().toISOString(),
+      };
+      setConversations((prev) => [localConv, ...prev]);
+      setActiveId(localConv.id);
+    }
+  }, [noteId, user?.userId, isValidNoteId]);
+
+  // 유효한 노트에서 처음 열릴 때 자동으로 대화 시작
+  useEffect(() => {
+    if (isValidNoteId && user?.userId && conversations.length === 0) {
+      newConversation();
+    }
+  }, [isValidNoteId, user?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const send = useCallback(
     async (text) => {
       const trimmed = text.trim();
-      if (!trimmed || isSending) return;
+      if (!trimmed || isSending || !active) return;
 
-      appendToActive(makeMessage('user', trimmed), { asTitle: true });
+      appendToActive(active.id, makeMessage('user', trimmed));
       setIsSending(true);
       try {
-        const res = await sendMessage(trimmed, { noteId });
-        appendToActive(makeMessage('assistant', res.message, res.timestamp));
+        if (active.conversationId) {
+          const res = await sendTutorMessage(active.conversationId, trimmed);
+          appendToActive(active.id, makeMessage('assistant', res.content));
+        } else {
+          appendToActive(active.id, makeMessage('assistant', '대화 세션이 없습니다. 새 대화를 시작해주세요.'));
+        }
       } catch {
-        appendToActive(makeMessage('assistant', '응답을 가져오지 못했어요. 잠시 후 다시 시도해주세요.'));
+        appendToActive(active.id, makeMessage('assistant', '응답을 가져오지 못했어요. 잠시 후 다시 시도해주세요.'));
       } finally {
         setIsSending(false);
       }
     },
-    [noteId, isSending, appendToActive],
+    [active, isSending, appendToActive],
   );
-
-  const newConversation = useCallback(() => {
-    const conv = createConversation();
-    setConversations((prev) => [conv, ...prev]);
-    setActiveId(conv.id);
-  }, []);
 
   const selectConversation = useCallback((id) => setActiveId(id), []);
 

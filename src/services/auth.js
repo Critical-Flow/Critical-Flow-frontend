@@ -38,3 +38,9 @@ export async function logoutApi() {
   await api.post('/api/v1/auth/logout');
   return { ok: true };
 }
+
+export async function deleteAccount() {
+  if (USE_MOCK) return { ok: true };
+  await api.delete('/api/v1/users/me');
+  return { ok: true };
+}

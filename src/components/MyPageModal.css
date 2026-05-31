@@ -114,6 +114,30 @@
   background: var(--primary-2);
 }
 
+.mpm-danger-zone {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  margin-top: auto;
+}
+
+.mpm-btn-danger {
+  padding: 8px 16px;
+  border: 1.5px solid #ef4444;
+  border-radius: 8px;
+  background: #fff;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mpm-btn-danger:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
 /* 우측 메인 컨텐츠 */
 .mpm-main {
   flex: 1;

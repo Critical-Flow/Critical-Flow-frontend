@@ -2,12 +2,42 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
-import { logoutApi } from '../services/auth';
+import { logoutApi, updateProfile, deleteAccount } from '../services/auth';
+import { reembedNotes } from '../services/notes';
 import './MyPageModal.css';
 
-function UserInfoTab({ user }) {
+function UserInfoTab({ user, onProfileUpdated }) {
+  const [affiliation, setAffiliation] = useState(user?.affiliation ?? '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isReembedding, setIsReembedding] = useState(false);
+
+  const handleReembed = async () => {
+    setIsReembedding(true);
+    try {
+      await reembedNotes();
+      alert('✅ DB 복구가 완료되었습니다.');
+    } catch {
+      alert('복구에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsReembedding(false);
+    }
+  };
+
   const githubLabel = user ? `GitHub · @${user.name}` : 'GitHub · 미연결';
   const isLinked = Boolean(user);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const updated = await updateProfile({ affiliation });
+      onProfileUpdated(updated);
+      alert('✅ 저장되었습니다.');
+    } catch {
+      alert('저장에 실패했어요.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="mpm-content">
@@ -15,7 +45,6 @@ function UserInfoTab({ user }) {
         <div className="mpm-row-label">사용자 정보</div>
         <div className="mpm-row-body">
           <span className="mpm-value">{user?.name ?? '게스트'}</span>
-          <button className="mpm-btn-sm">변경</button>
         </div>
       </div>
       <div className="mpm-row">
@@ -31,10 +60,22 @@ function UserInfoTab({ user }) {
           <input
             type="text"
             className="mpm-input"
-            defaultValue={user?.name ?? ''}
-            placeholder="표시 이름을 입력하세요"
+            value={affiliation}
+            onChange={(e) => setAffiliation(e.target.value)}
+            placeholder="소속 또는 호칭을 입력하세요"
           />
-          <button className="mpm-btn-sm">저장</button>
+          <button className="mpm-btn-sm" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? '저장 중' : '저장'}
+          </button>
+        </div>
+      </div>
+      <div className="mpm-row">
+        <div className="mpm-row-label">DB 복구</div>
+        <div className="mpm-row-body">
+          <span className="mpm-value" style={{ fontSize: '13px', color: 'var(--sub)' }}>DB가 꼬일 경우 누르세요</span>
+          <button className="mpm-btn-sm" onClick={handleReembed} disabled={isReembedding}>
+            {isReembedding ? '복구 중...' : '복구'}
+          </button>
         </div>
       </div>
     </div>
@@ -90,7 +131,7 @@ function InquiryTab() {
 
 export default function MyPageModal() {
   const { myPageOpen, setMyPageOpen } = useModal();
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('user');
 
@@ -109,6 +150,18 @@ export default function MyPageModal() {
     logout();
     setMyPageOpen(false);
     navigate('/');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('정말 탈퇴하시겠어요? 모든 데이터가 삭제됩니다.')) return;
+    try {
+      await deleteAccount();
+      logout();
+      setMyPageOpen(false);
+      navigate('/');
+    } catch {
+      alert('탈퇴에 실패했어요. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -146,7 +199,16 @@ export default function MyPageModal() {
 
           {/* 우측 컨텐츠 */}
           <main className="mpm-main">
-            {activeTab === 'user' ? <UserInfoTab user={user} /> : <InquiryTab />}
+            {activeTab === 'user' ? (
+              <>
+                <UserInfoTab user={user} onProfileUpdated={updateUser} />
+                <div className="mpm-danger-zone">
+                  <button className="mpm-btn-danger" onClick={handleDeleteAccount}>회원 탈퇴</button>
+                </div>
+              </>
+            ) : (
+              <InquiryTab />
+            )}
           </main>
         </div>
 

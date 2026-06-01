@@ -76,6 +76,12 @@
   font-weight: 600;
 }
 
+.s-affiliation {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0 14px 6px;
+}
+
 .s-mypage-btn {
   display: flex;
   align-items: center;

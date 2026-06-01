@@ -17,11 +17,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((updated) => {
+    const merged = { ...getItem(STORAGE_KEYS.USER), ...updated };
+    setItem(STORAGE_KEYS.USER, merged);
+    setUser(merged);
+  }, []);
+
   const value = {
     user,
     isAuthenticated: user !== null,
     login,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

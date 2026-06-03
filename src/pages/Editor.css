@@ -184,6 +184,25 @@
   display: none;
 }
 
+/* 글자수 카운터 (워크스페이스 하단 우측 고정) */
+.char-counter {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  z-index: 5;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.char-counter.over {
+  color: #ef4444;
+}
+
 
 /* 좌/우 사이드바 */
 .lside,

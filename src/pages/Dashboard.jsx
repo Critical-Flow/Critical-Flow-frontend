@@ -5,9 +5,26 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import { getStats } from '../services/dashboard';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from 'recharts';
 import './Dashboard.css';
 
-const TOPIC_COLORS = ['#A8E0CD', '#3EA990', '#4DBDA3', '#e5e7eb'];
+const TOPIC_COLOR_MAP = {
+  '알고리즘': '#3EA990',
+  'React':    '#4DBDA3',
+  'Python':   '#5aaa8e',
+  '기타':     '#7fbfb1',
+};
+const getTopicColor = (name) => TOPIC_COLOR_MAP[name] ?? '#3EA990';
+
+const TOOLTIP_STYLE = {
+  borderRadius: 8,
+  border: '1px solid var(--line)',
+  background: 'var(--bg-panel)',
+  fontSize: 13,
+};
 
 export default function Dashboard() {
   const { data, loading, error, refetch } = useFetch(getStats);
@@ -30,8 +47,6 @@ export default function Dashboard() {
     );
   }
 
-  let donutOffset = 0;
-
   return (
     <AppLayout>
       <div className="dash-container">
@@ -47,48 +62,62 @@ export default function Dashboard() {
         <div className="charts">
           <div className="chart-card">
             <h3>요일별 학습 시간</h3>
-            <div className="bar-chart">
-              {data.weekly.map(({ day, hours }) => (
-                <div className="col" key={day}>
-                  <div className="val">{hours}h</div>
-                  <div className="bar" style={{ height: `${Math.round(hours * 34)}px` }} />
-                  <div className="lbl">{day}</div>
-                </div>
-              ))}
-            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={data.weekly} barCategoryGap="35%">
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#A8E0CD" />
+                    <stop offset="100%" stopColor="#3EA990" />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: 'var(--sub)', fontWeight: 600 }}
+                />
+                <YAxis hide />
+                <Tooltip
+                  formatter={(value) => [`${value}h`, '학습 시간']}
+                  contentStyle={TOOLTIP_STYLE}
+                  cursor={false}
+                />
+                <Bar dataKey="hours" fill="url(#barGradient)" radius={[8, 8, 0, 0]} activeBar={false} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
 
           <div className="chart-card">
             <h3>주제별 비중</h3>
-            <div className="donut">
-              <svg viewBox="0 0 36 36" width="140" height="140">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" strokeWidth="4" />
-                {data.topics.map(({ name, percent }, idx) => {
-                  const dashArray = `${percent} 100`;
-                  const dashOffset = -donutOffset;
-                  donutOffset += percent;
-                  return (
-                    <circle
-                      key={name}
-                      cx="18" cy="18" r="15.9"
-                      fill="none"
-                      stroke={TOPIC_COLORS[idx % TOPIC_COLORS.length]}
-                      strokeWidth="4"
-                      strokeDasharray={dashArray}
-                      strokeDashoffset={dashOffset}
-                      transform="rotate(-90 18 18)"
-                    />
-                  );
-                })}
-              </svg>
-              <div className="legend">
-                {data.topics.map(({ name, percent }, idx) => (
-                  <div key={name}>
-                    <span className="dot" style={{ background: TOPIC_COLORS[idx % TOPIC_COLORS.length] }} />
-                    {name} {percent}%
-                  </div>
-                ))}
-              </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={data.topics}
+                  dataKey="percent"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={2}
+                >
+                  {data.topics.map((topic, idx) => (
+                    <Cell key={idx} fill={getTopicColor(topic.name)} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => [`${value}%`, '비중']}
+                  contentStyle={TOOLTIP_STYLE}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="pie-legend">
+              {data.topics.map((topic) => (
+                <div key={topic.name} className="pie-legend-item">
+                  <span className="pie-legend-dot" style={{ backgroundColor: getTopicColor(topic.name) }} />
+                  <span className="pie-legend-label">{topic.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

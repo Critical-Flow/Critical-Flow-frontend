@@ -14,6 +14,9 @@ import useResizable from '../hooks/useResizable';
 import { getNote, saveNote, getFolders, getNotes } from '../services/notes';
 import { startSession, endSession } from '../services/session';
 
+// 노트 본문 글자수 제한 (공백 포함)
+const MAX_CHARS = 2000;
+
 export default function Editor() {
   const { noteId } = useParams();
   const [searchParams] = useSearchParams();
@@ -82,6 +85,11 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
+    // 버튼 비활성화와 별개로 핸들러에서도 글자수 초과를 막는다(이중 방어).
+    if (md.length > MAX_CHARS) {
+      alert(`본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요.`);
+      return;
+    }
     try {
       const payload = {
         noteId: isNew ? undefined : Number(noteId),
@@ -125,6 +133,10 @@ export default function Editor() {
     .filter(Boolean).join(' ');
   const rsideClass = ['rside', !rsideOpen && 'hidden', `mode-${rsideMode}`]
     .filter(Boolean).join(' ');
+
+  // 본문 글자수(공백 포함) — raw/WYSIWYG 모두 md를 공유하므로 md.length로 통일 측정
+  const charCount = md.length;
+  const isOverLimit = charCount > MAX_CHARS;
 
   if (noteLoading && !isNew) {
     return <div className="app"><Loading fullPage /></div>;
@@ -250,13 +262,16 @@ export default function Editor() {
             <MilkdownEditor key={remountKey} ref={milkdownRef} value={md} onChange={setMd} />
           )}
         </div>
+        <div className={`char-counter${isOverLimit ? ' over' : ''}`}>
+          {charCount.toLocaleString()} / {MAX_CHARS.toLocaleString()}
+        </div>
       </div>
 
       <EditorDock
         lsideOpen={lsideOpen}
         rsideOpen={rsideOpen}
         rsideDisabled={!isSaved}
-        saveDisabled={!md.trim()}
+        saveDisabled={!md.trim() || isOverLimit}
         viewMode={viewMode}
         isLearning={isLearning}
         onToggleLside={lside.toggle}

@@ -85,6 +85,11 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
+    // 버튼 비활성화와 별개로 핸들러에서도 글자수 초과를 막는다(이중 방어).
+    if (md.length > MAX_CHARS) {
+      alert(`본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요.`);
+      return;
+    }
     try {
       const payload = {
         noteId: isNew ? undefined : Number(noteId),

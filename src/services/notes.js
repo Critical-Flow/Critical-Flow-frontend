@@ -100,7 +100,7 @@ export async function createCategory({ title, description }) {
     await new Promise((r) => setTimeout(r, 200));
     return { categoryId: Date.now(), title, description, createdAt: new Date().toISOString() };
   }
-  const { data } = await api.post('/api/v1/categories', { title, description });
+  const { data } = await api.post('/api/v1/categories', { title, ...(description ? { description } : {}) });
   return data;
 }
 

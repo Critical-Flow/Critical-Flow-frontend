@@ -124,7 +124,15 @@ export default function Directory() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             />
-            <Link to={`/editor/new?categoryId=${activeCategoryId}`} className="btn-primary-dir">+ 새 노트</Link>
+            {activeCategoryId === 0 ? (
+              <button
+                type="button"
+                className="btn-primary-dir"
+                onClick={() => alert('폴더를 선택한 후 노트를 생성해주세요.')}
+              >+ 새 노트</button>
+            ) : (
+              <Link to={`/editor/new?categoryId=${activeCategoryId}`} className="btn-primary-dir">+ 새 노트</Link>
+            )}
           </div>
         </div>
 

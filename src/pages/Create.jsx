@@ -16,7 +16,7 @@ export default function Create({ isGuest = false }) {
   const [topicInput, setTopicInput] = useState('');
   const [activeChips, setActiveChips] = useState([]);
   const [time, setTime] = useState(60);
-  const [titleError, setTitleError] = useState(false);
+  const [titleError, setTitleError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   const toggleChip = (val) => {
@@ -30,7 +30,8 @@ export default function Create({ isGuest = false }) {
   const sliderPct = ((time - 5) / (300 - 5)) * 100;
 
   const handleCreate = async () => {
-    if (!title.trim()) { setTitleError(true); return; }
+    if (!title.trim()) { setTitleError('제목을 입력해주세요.'); return; }
+    if (title.trim() === '전체') { setTitleError('"전체"는 사용할 수 없는 이름이에요.'); return; }
     if (isGuest) {
       alert('로그인 후 이용해 주세요.');
       return;
@@ -59,8 +60,9 @@ export default function Create({ isGuest = false }) {
                 className={`form-input${titleError ? ' error' : ''}`}
                 placeholder="학습 제목을 입력하세요"
                 value={title}
-                onChange={(e) => { setTitle(e.target.value); setTitleError(false); }}
+                onChange={(e) => { setTitle(e.target.value); setTitleError(''); }}
               />
+              {titleError && <p className="form-error">{titleError}</p>}
             </div>
 
             <div className="form-section">

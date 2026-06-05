@@ -122,6 +122,15 @@ export async function deleteCategory(categoryId) {
   return { ok: true };
 }
 
+export async function getNotesByCategory(categoryId) {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 200));
+    return MOCK_NOTES.filter((n) => n.categoryId === categoryId);
+  }
+  const { data } = await api.get(`/api/v1/categories/${categoryId}/notes`);
+  return data;
+}
+
 export async function reembedNotes() {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 500));

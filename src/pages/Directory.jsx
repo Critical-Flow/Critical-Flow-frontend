@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
@@ -10,8 +10,10 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useDebounce from '../hooks/useDebounce';
-import { getNotes, getFolders, deleteCategory, updateCategory, deleteNote } from '../services/notes';
+import { getNotes, getNotesByCategory, getFolders, deleteCategory, updateCategory, deleteNote } from '../services/notes';
 import './Directory.css';
+
+const PAGE_SIZE = 12;
 
 export default function Directory() {
   const { user } = useAuth();
@@ -19,18 +21,42 @@ export default function Directory() {
   const [activeCategoryId, setActiveCategoryId] = useState(0);
   const [editingFolder, setEditingFolder] = useState(null);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 12;
   const debouncedSearch = useDebounce(search, 300);
 
-  const {
-    data: notes,
-    loading: notesLoading,
-    error: notesError,
-    refetch: refetchNotes,
-  } = useFetch(
-    () => user?.userId ? getNotes({ userId: user.userId }) : Promise.resolve([]),
-    [user?.userId],
-  );
+  const [currentNotes, setCurrentNotes] = useState([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesError, setNotesError] = useState(null);
+  const cacheRef = useRef(new Map()); // categoryId → notes[]
+
+  const loadNotes = useCallback(async (categoryId) => {
+    if (!user?.userId) return;
+    if (cacheRef.current.has(categoryId)) {
+      setCurrentNotes(cacheRef.current.get(categoryId));
+      return;
+    }
+    setNotesLoading(true);
+    setNotesError(null);
+    try {
+      const data = categoryId === 0
+        ? await getNotes({ userId: user.userId })
+        : await getNotesByCategory(categoryId);
+      cacheRef.current.set(categoryId, data);
+      setCurrentNotes(data);
+    } catch (e) {
+      setNotesError(e);
+    } finally {
+      setNotesLoading(false);
+    }
+  }, [user?.userId]);
+
+  useEffect(() => {
+    loadNotes(activeCategoryId);
+  }, [activeCategoryId, loadNotes]);
+
+  const refetchNotes = useCallback(() => {
+    cacheRef.current.clear();
+    loadNotes(activeCategoryId);
+  }, [activeCategoryId, loadNotes]);
 
   const { data: categories, refetch: refetchFolders } = useFetch(getFolders, []);
 
@@ -42,11 +68,7 @@ export default function Directory() {
   const getCategoryTitle = (categoryId) =>
     categories?.find((c) => c.categoryId === categoryId)?.title ?? '';
 
-  const folderNotes = (notes ?? []).filter(
-    (note) => activeCategoryId === 0 || note.categoryId === activeCategoryId,
-  );
-
-  const filtered = folderNotes.filter((note) =>
+  const filtered = currentNotes.filter((note) =>
     note.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
   );
 
@@ -57,7 +79,9 @@ export default function Directory() {
     if (!window.confirm('폴더를 삭제하시겠어요?')) return;
     try {
       await deleteCategory(categoryId);
+      cacheRef.current.clear();
       if (activeCategoryId === categoryId) setActiveCategoryId(0);
+      else loadNotes(activeCategoryId);
       refetchFolders();
     } catch {
       alert('삭제에 실패했어요.');
@@ -90,7 +114,7 @@ export default function Directory() {
       <div className="dir-container">
         <div className="notes-head">
           <div>
-            <PageHeader title="내 노트" sub={`총 ${folderNotes.length}개의 노트`} />
+            <PageHeader title="내 노트" sub={`총 ${filtered.length}개의 노트`} />
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <input

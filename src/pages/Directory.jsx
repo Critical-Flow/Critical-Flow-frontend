@@ -83,8 +83,15 @@ export default function Directory() {
       if (activeCategoryId === categoryId) setActiveCategoryId(0);
       else loadNotes(activeCategoryId);
       refetchFolders();
-    } catch {
-      alert('삭제에 실패했어요.');
+    } catch (e) {
+      if (e.response?.data?.code === 'CATEGORY_NOT_FOUND') {
+        // 이미 삭제된 폴더 → UI만 정리
+        cacheRef.current.clear();
+        if (activeCategoryId === categoryId) setActiveCategoryId(0);
+        refetchFolders();
+      } else {
+        alert('삭제에 실패했어요.');
+      }
     }
   };
 

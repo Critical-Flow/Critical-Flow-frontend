@@ -104,12 +104,15 @@ export async function createCategory({ title, description }) {
   return data;
 }
 
-export async function updateCategory(categoryId, payload) {
+export async function updateCategory(categoryId, { title, description }) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
-    return { categoryId, ...payload };
+    return { categoryId, title, description };
   }
-  const { data } = await api.patch(`/api/v1/categories/${categoryId}`, payload);
+  const { data } = await api.patch(`/api/v1/categories/${categoryId}`, {
+    title,
+    ...(description ? { description } : {}),
+  });
   return data;
 }
 

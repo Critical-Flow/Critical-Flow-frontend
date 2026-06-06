@@ -48,7 +48,9 @@ export default function TutorPanel({ noteId, hidden }) {
   return (
     <section className="tutor-panel" aria-hidden={hidden}>
       <div className="tutor-head">
-        {view === 'chat' ? (
+        {mode === 'ask' ? (
+          <span className="tutor-icon-btn" />
+        ) : view === 'chat' ? (
           <button type="button" className="tutor-icon-btn" onClick={() => setView('list')} title="대화 목록">☰</button>
         ) : (
           <button type="button" className="tutor-icon-btn" onClick={() => setView('chat')} title="뒤로">‹</button>
@@ -130,7 +132,9 @@ export default function TutorPanel({ noteId, hidden }) {
             </form>
           ) : (
             <div className="chat-readonly">
-              이전 대화 기록입니다. 새 대화를 시작하려면 + 를 눌러주세요.
+              {!active
+                ? '대화가 없어요. + 버튼으로 새 대화를 시작해보세요.'
+                : '이전 대화 기록입니다. 새 대화를 시작하려면 + 를 눌러주세요.'}
             </div>
           )}
         </>

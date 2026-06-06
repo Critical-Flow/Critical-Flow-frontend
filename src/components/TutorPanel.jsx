@@ -12,10 +12,12 @@ export default function TutorPanel({ noteId, hidden }) {
     messages,
     isSending,
     isLoadingMessages,
+    mode,
     send,
     newConversation,
     selectConversation,
     removeConversation,
+    continueLatest,
   } = useTutorChat(noteId);
   const [input, setInput] = useState('');
   const [view, setView] = useState('chat');
@@ -55,7 +57,20 @@ export default function TutorPanel({ noteId, hidden }) {
         <button type="button" className="tutor-icon-btn" onClick={handleNew} title="새 대화">+</button>
       </div>
 
-      {view === 'list' ? (
+      {mode === 'ask' ? (
+        <div className="tutor-ask">
+          <p className="tutor-ask-title">이전 대화가 있어요</p>
+          <p className="tutor-ask-desc">이전 대화를 이어가시겠어요?</p>
+          <div className="tutor-ask-actions">
+            <button type="button" className="tutor-ask-btn primary" onClick={continueLatest}>
+              이전 대화 계속하기
+            </button>
+            <button type="button" className="tutor-ask-btn ghost" onClick={handleNew}>
+              새 대화 시작
+            </button>
+          </div>
+        </div>
+      ) : view === 'list' ? (
         <div className="conv-list">
           {conversations.map((c) => (
             <div

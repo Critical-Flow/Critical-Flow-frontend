@@ -8,7 +8,7 @@ export async function getConversations(userId, noteId) {
   return data; // number[]
 }
 
-export async function startConversation({ noteId, userId, type = 'QUESTION', questionType = 'TYPE_A' }) {
+export async function startConversation({ noteId, userId, type = 'QUESTION' }) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     return {
@@ -20,7 +20,7 @@ export async function startConversation({ noteId, userId, type = 'QUESTION', que
       firstQuestion: '노트 내용에 대해 무엇이든 물어보세요.',
     };
   }
-  const { data } = await api.post('/api/v1/conversations', { noteId, userId, type, questionType });
+  const { data } = await api.post('/api/v1/conversations', { noteId, userId, type });
   return data;
 }
 

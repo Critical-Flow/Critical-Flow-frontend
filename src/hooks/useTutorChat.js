@@ -39,6 +39,7 @@ export default function useTutorChat(noteId) {
   const [activeId, setActiveId] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [mode, setMode] = useState('chat'); // 'ask' = 계속/새로 선택 대기, 'chat' = 채팅 화면
 
   const isValidNoteId = noteId && noteId !== 'new';
   const active = conversations.find((c) => c.id === activeId);
@@ -76,6 +77,7 @@ export default function useTutorChat(noteId) {
       };
       setConversations((prev) => markLatest([localConv, ...prev.map((c) => ({ ...c, isLatest: false }))]));
       setActiveId(localConv.id);
+      setMode('chat');
     } catch {
       const localConv = {
         id: crypto.randomUUID(),
@@ -87,6 +89,7 @@ export default function useTutorChat(noteId) {
       };
       setConversations((prev) => [localConv, ...prev]);
       setActiveId(localConv.id);
+      setMode('chat');
     }
   }, [noteId, user?.userId, isValidNoteId]);
 
@@ -115,6 +118,7 @@ export default function useTutorChat(noteId) {
         );
         setConversations(skeletons);
         setActiveId(String(sorted[0]));
+        setMode('ask');
       })
       .catch(() => {
         if (cancelled) return;
@@ -157,6 +161,11 @@ export default function useTutorChat(noteId) {
     },
     [conversations],
   );
+
+  const continueLatest = useCallback(() => {
+    setMode('chat');
+    if (activeId) selectConversation(activeId);
+  }, [activeId, selectConversation]);
 
   const removeConversation = useCallback(
     async (id) => {
@@ -205,9 +214,11 @@ export default function useTutorChat(noteId) {
     messages,
     isSending,
     isLoadingMessages,
+    mode,
     send,
     newConversation,
     selectConversation,
     removeConversation,
+    continueLatest,
   };
 }

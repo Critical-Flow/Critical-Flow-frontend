@@ -603,6 +603,76 @@
   color: #fff;
 }
 
+.chat-readonly {
+  margin-top: auto;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #9aa3a0;
+  background: #f8faf9;
+  border-radius: 12px;
+  border: 1px dashed rgba(31, 111, 95, 0.15);
+}
+
+/* 이전 대화 / 새 대화 선택 뷰 */
+.tutor-ask {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.tutor-ask-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F6F5F;
+  margin: 0;
+}
+
+.tutor-ask-desc {
+  font-size: 13px;
+  color: #6b7b76;
+  margin: 0;
+}
+
+.tutor-ask-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tutor-ask-btn {
+  width: 100%;
+  padding: 11px 0;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.tutor-ask-btn:hover {
+  opacity: 0.85;
+}
+
+.tutor-ask-btn.primary {
+  background: #2FA084;
+  color: #fff;
+  border: none;
+}
+
+.tutor-ask-btn.ghost {
+  background: transparent;
+  color: #2FA084;
+  border: 1.5px solid #2FA084;
+}
+
 .chat-input {
   margin-top: auto;
   display: flex;

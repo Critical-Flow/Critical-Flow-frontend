@@ -85,7 +85,6 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
-    // 버튼 비활성화와 별개로 핸들러에서도 글자수 초과를 막는다(이중 방어).
     if (md.length > MAX_CHARS) {
       alert(`본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요.`);
       return;
@@ -111,8 +110,15 @@ export default function Editor() {
       if (isNew && saved?.noteId) {
         navigate(`/editor/${saved.noteId}`, { replace: true, state: { openRside: true } });
       }
-    } catch {
-      alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } catch (e) {
+      const code = e.response?.data?.code;
+      if (code === 'NOTE_ACCESS_DENIED') {
+        alert('이 노트에 접근 권한이 없어요.');
+      } else if (code === 'NOTE_TITLE_REQUIRED') {
+        alert('제목을 입력해주세요.');
+      } else {
+        alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
+      }
     }
   };
 
@@ -127,8 +133,15 @@ export default function Editor() {
         setSessionId(null);
         setIsLearning(false);
       }
-    } catch {
-      alert('학습 세션 상태를 변경하지 못했어요.');
+    } catch (e) {
+      const code = e.response?.data?.code;
+      if (code === 'SESSION_ALREADY_ENDED' || code === 'SESSION_NOT_FOUND') {
+        // 서버에서 이미 종료된 세션 → 상태만 정리
+        setSessionId(null);
+        setIsLearning(false);
+      } else {
+        alert('학습 세션 상태를 변경하지 못했어요.');
+      }
     }
   };
 
@@ -148,9 +161,13 @@ export default function Editor() {
   }
 
   if (noteError) {
+    const isAccessDenied = noteError.response?.data?.code === 'NOTE_ACCESS_DENIED';
     return (
       <div className="app">
-        <ErrorMessage message="노트를 불러오지 못했어요." onRetry={refetchNote} />
+        <ErrorMessage
+          message={isAccessDenied ? '이 노트에 접근 권한이 없어요.' : '노트를 불러오지 못했어요.'}
+          onRetry={isAccessDenied ? undefined : refetchNote}
+        />
       </div>
     );
   }
@@ -276,7 +293,7 @@ export default function Editor() {
         lsideOpen={lsideOpen}
         rsideOpen={rsideOpen}
         rsideDisabled={!isSaved}
-        saveDisabled={!md.trim() || isOverLimit}
+        saveDisabled={!title.trim() || !md.trim() || isOverLimit}
         viewMode={viewMode}
         isLearning={isLearning}
         onToggleLside={lside.toggle}

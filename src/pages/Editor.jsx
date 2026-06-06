@@ -41,8 +41,17 @@ export default function Editor() {
     () => user?.userId ? getNotes({ userId: user.userId }) : Promise.resolve([]),
     [user?.userId],
   );
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
+  useEffect(() => {
+    if (note?.categoryId && selectedCategoryId === null) {
+      setSelectedCategoryId(note.categoryId);
+    }
+  }, [note?.categoryId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const folderNotes = (allNotes ?? []).filter(
-    (n) => n.categoryId === note?.categoryId,
+    (n) => n.categoryId === (selectedCategoryId ?? note?.categoryId),
   );
 
   const [lsideOpen, lside] = useToggle(false);
@@ -198,7 +207,12 @@ export default function Editor() {
         <h4>📂 디렉토리</h4>
         <ul>
           {(folders ?? []).map((f) => (
-            <li key={f.categoryId} className={f.categoryId === note?.categoryId ? 'active' : ''}>
+            <li
+              key={f.categoryId}
+              className={f.categoryId === selectedCategoryId ? 'active' : ''}
+              onClick={() => setSelectedCategoryId(f.categoryId)}
+              style={{ cursor: 'pointer' }}
+            >
               📁 {f.title}
             </li>
           ))}

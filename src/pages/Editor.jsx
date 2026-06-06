@@ -67,16 +67,21 @@ export default function Editor() {
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const milkdownRef = useRef(null);
+  const savedRef = useRef({ md: '', title: '' });
   const { startResize } = useResizable({ cssVar: '--rside-width', min: 350, max: 520 });
 
   useEffect(() => {
     if (note) {
-      setMd(note.content ?? '');
-      setTitle(note.title ?? '');
+      const content = note.content ?? '';
+      const noteTitle = note.title ?? '';
+      setMd(content);
+      setTitle(noteTitle);
+      savedRef.current = { md: content, title: noteTitle };
       setRemountKey((k) => k + 1);
     } else if (isNew) {
       setMd('');
       setTitle('');
+      savedRef.current = { md: '', title: '' };
     }
   }, [note, isNew]);
 
@@ -112,6 +117,7 @@ export default function Editor() {
         sessionId: sessionId ?? 0,
       };
       const saved = await saveNote(payload, user?.userId);
+      savedRef.current = { md, title };
       if (lsideOpen) lside.off();
       rside.on();
       setIsSaved(true);
@@ -160,6 +166,14 @@ export default function Editor() {
     .filter(Boolean).join(' ');
   const rsideClass = ['rside', !rsideOpen && 'hidden', `mode-${rsideMode}`]
     .filter(Boolean).join(' ');
+
+  const hasUnsavedChanges = md !== savedRef.current.md || title !== savedRef.current.title;
+
+  const handleNavigateToNote = (targetNoteId) => {
+    if (targetNoteId === Number(noteId)) return;
+    if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 이동하시겠어요?')) return;
+    navigate(`/editor/${targetNoteId}`);
+  };
 
   // 본문 글자수(공백 포함) — raw/WYSIWYG 모두 md를 공유하므로 md.length로 통일 측정
   const charCount = md.length;
@@ -223,8 +237,8 @@ export default function Editor() {
             <li
               key={n.noteId}
               className={n.noteId === Number(noteId) ? 'active' : ''}
-              onClick={() => navigate(`/editor/${n.noteId}`)}
-              style={{ cursor: 'pointer' }}
+              onClick={() => handleNavigateToNote(n.noteId)}
+              style={{ cursor: n.noteId === Number(noteId) ? 'default' : 'pointer' }}
             >
               {n.title}
             </li>
@@ -307,7 +321,12 @@ export default function Editor() {
         lsideOpen={lsideOpen}
         rsideOpen={rsideOpen}
         rsideDisabled={!isSaved}
-        saveDisabled={!title.trim() || !md.trim() || isOverLimit}
+        saveDisabledReason={
+          !title.trim() ? '제목을 입력해주세요' :
+          !md.trim() ? '본문을 입력해주세요' :
+          isOverLimit ? `본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요` :
+          null
+        }
         viewMode={viewMode}
         isLearning={isLearning}
         onToggleLside={lside.toggle}

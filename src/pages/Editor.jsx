@@ -90,12 +90,17 @@ export default function Editor() {
       alert(`본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요.`);
       return;
     }
+    const categoryId = note?.categoryId ?? newCategoryId;
+    if (!categoryId) {
+      alert('폴더를 선택한 후 노트를 저장해주세요.');
+      return;
+    }
     try {
       const payload = {
         noteId: isNew ? undefined : Number(noteId),
         title,
         content: md,
-        categoryId: note?.categoryId ?? newCategoryId,
+        categoryId,
         sessionId: sessionId ?? 0,
       };
       const saved = await saveNote(payload, user?.userId);

@@ -3,6 +3,7 @@ import { Editor, rootCtx, defaultValueCtx, commandsCtx } from '@milkdown/core';
 import { commonmark } from '@milkdown/preset-commonmark';
 import { gfm } from '@milkdown/preset-gfm';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
+import { clipboard } from '@milkdown/plugin-clipboard';
 import './MilkdownEditor.css';
 
 const MilkdownEditor = forwardRef(function MilkdownEditor({ value, onChange }, ref) {
@@ -37,6 +38,9 @@ const MilkdownEditor = forwardRef(function MilkdownEditor({ value, onChange }, r
       })
       .use(commonmark)
       .use(gfm)
+      // 클립보드의 마크다운 텍스트를 붙여넣을 때 노드로 파싱한다.
+      // commonmark/gfm 뒤에 두어 두 프리셋의 노드 스키마를 모두 인식하게 한다.
+      .use(clipboard)
       .use(listener)
       .create()
       .then((editor) => {

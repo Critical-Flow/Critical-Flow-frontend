@@ -141,9 +141,15 @@ export default function useTutorChat(noteId) {
               : c,
           ),
         );
-      } catch {
+      } catch (e) {
+        const errorMessage =
+          e.response?.data?.code === 'CONVERSATION_NOT_FOUND'
+            ? '대화를 찾을 수 없어요. 삭제된 대화일 수 있어요.'
+            : '대화를 불러오지 못했어요. 잠시 후 다시 시도해주세요.';
         setConversations((prev) =>
-          prev.map((c) => (c.id === id ? { ...c, messages: [] } : c)),
+          prev.map((c) =>
+            c.id === id ? { ...c, messages: [makeMessage('assistant', errorMessage)] } : c,
+          ),
         );
       } finally {
         setIsLoadingMessages(false);
@@ -158,14 +164,14 @@ export default function useTutorChat(noteId) {
       if (!conv?.conversationId || !user?.userId) return;
       try {
         await deleteConversation(conv.conversationId, user.userId);
-        setConversations((prev) => {
-          const next = markLatest(prev.filter((c) => c.id !== id));
-          if (activeId === id) setActiveId(next[0]?.id ?? null);
-          return next;
-        });
-      } catch {
-        // 삭제 실패 시 상태 유지
+      } catch (e) {
+        if (e.response?.data?.code !== 'CONVERSATION_NOT_FOUND') return;
       }
+      setConversations((prev) => {
+        const next = markLatest(prev.filter((c) => c.id !== id));
+        if (activeId === id) setActiveId(next[0]?.id ?? null);
+        return next;
+      });
     },
     [conversations, activeId, user?.userId],
   );

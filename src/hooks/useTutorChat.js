@@ -131,6 +131,7 @@ export default function useTutorChat(noteId) {
   const selectConversation = useCallback(
     async (id) => {
       setActiveId(id);
+      setMode('chat');
       const conv = conversations.find((c) => c.id === id);
       if (!conv || conv.messages !== null) return;
 

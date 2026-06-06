@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
@@ -44,11 +44,20 @@ export default function Editor() {
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
+  // noteId가 바뀌면 선택 카테고리 리셋 (URL 직접 변경 대응)
   useEffect(() => {
-    if (note?.categoryId && selectedCategoryId === null) {
+    setSelectedCategoryId(null);
+  }, [noteId]);
+
+  // 노트 로드 완료 후 해당 카테고리로 초기화 (새 노트는 URL의 categoryId 사용)
+  useEffect(() => {
+    if (selectedCategoryId !== null) return;
+    if (isNew && newCategoryId) {
+      setSelectedCategoryId(newCategoryId);
+    } else if (note?.categoryId) {
       setSelectedCategoryId(note.categoryId);
     }
-  }, [note?.categoryId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [note?.categoryId, isNew, newCategoryId, selectedCategoryId]);
 
   const folderNotes = (allNotes ?? []).filter(
     (n) => n.categoryId === (selectedCategoryId ?? note?.categoryId),
@@ -99,10 +108,6 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
-    if (md.length > MAX_CHARS) {
-      alert(`본문은 최대 ${MAX_CHARS.toLocaleString()}자까지 저장할 수 있어요.`);
-      return;
-    }
     const categoryId = note?.categoryId ?? newCategoryId;
     if (!categoryId) {
       alert('폴더를 선택한 후 노트를 저장해주세요.');
@@ -212,7 +217,14 @@ export default function Editor() {
           />
           <span className="ext">.md</span>
         </div>
-        <Link className="back" to="/directory">✕ 취소하고 돌아가기</Link>
+        <button
+          type="button"
+          className="back"
+          onClick={() => {
+            if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 나가시겠어요?')) return;
+            navigate('/directory');
+          }}
+        >✕ 취소하고 돌아가기</button>
       </div>
 
       <EditorToolbar onCommand={handleCommand} />

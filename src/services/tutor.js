@@ -3,6 +3,11 @@ import api from './api';
 //const USE_MOCK = import.meta.env.DEV;
 const USE_MOCK = false;
 
+export async function getConversations(userId, noteId) {
+  const { data } = await api.get('/api/v1/conversations', { params: { userId, noteId } });
+  return data; // number[]
+}
+
 export async function startConversation({ noteId, userId, type = 'QUESTION' }) {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
@@ -35,4 +40,8 @@ export async function sendTutorMessage(conversationId, userMessage) {
   }
   const { data } = await api.post(`/api/v1/conversations/${conversationId}/messages`, { userMessage });
   return data;
+}
+
+export async function deleteConversation(conversationId, userId) {
+  await api.delete(`/api/v1/conversations/${conversationId}`, { params: { userId } });
 }

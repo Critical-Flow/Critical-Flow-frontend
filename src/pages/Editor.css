@@ -526,14 +526,16 @@
 
 .conv-item {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   padding: 12px 14px;
   border-radius: 12px;
   background: #fff;
   border: 1px solid transparent;
   text-align: left;
   transition: background 0.15s;
+  cursor: pointer;
 }
 
 .conv-item:hover {
@@ -544,15 +546,52 @@
   border-color: #2FA084;
 }
 
+.conv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
 .conv-title {
   font-size: 14px;
   font-weight: 700;
   color: #1a3d32;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.conv-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2FA084;
+  background: rgba(47, 160, 132, 0.1);
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex-shrink: 0;
 }
 
 .conv-time {
   font-size: 12px;
   color: #9aa3a0;
+}
+
+.conv-delete {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.conv-item:hover .conv-delete {
+  opacity: 1;
 }
 
 .chat-window {

@@ -1,0 +1,46 @@
+.focus-monitor {
+  position: fixed;
+  bottom: 72px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg, #1e1e2e);
+  border: 1px solid var(--border, #333);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.focus-video {
+  width: 160px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #000;
+}
+
+.focus-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.focus-badge.good {
+  background: #1a3a2a;
+  color: #4caf78;
+}
+
+.focus-badge.drowsy {
+  background: #3a2010;
+  color: #ff8c42;
+}
+
+.focus-badge.absent {
+  background: #2e1a1a;
+  color: #e05252;
+}

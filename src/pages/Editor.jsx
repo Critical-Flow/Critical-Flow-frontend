@@ -6,11 +6,13 @@ import MilkdownEditor from '../components/MilkdownEditor';
 import EditorToolbar from '../components/EditorToolbar';
 import EditorDock from '../components/EditorDock';
 import TutorPanel from '../components/TutorPanel';
+import FocusMonitor from '../components/FocusMonitor';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useToggle from '../hooks/useToggle';
 import useResizable from '../hooks/useResizable';
+import useFocusMonitor from '../hooks/useFocusMonitor';
 import { getNote, saveNote, getFolders, getNotes } from '../services/notes';
 import { startSession, endSession } from '../services/session';
 
@@ -75,6 +77,34 @@ export default function Editor() {
   const [isSaved, setIsSaved] = useState(!isNew);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
+  const { videoRef, start: startMonitor, stop: stopMonitor, currentState, isMonitoring } = useFocusMonitor();
+
+  const isLearningRef = useRef(false);
+  const sessionIdRef = useRef(null);
+  useEffect(() => { isLearningRef.current = isLearning; }, [isLearning]);
+  useEffect(() => { sessionIdRef.current = sessionId; }, [sessionId]);
+
+  // 새로고침/탭 닫기 시 학습 중 경고
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isLearningRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  // 언마운트 시 학습 세션 자동 종료
+  useEffect(() => {
+    return () => {
+      if (isLearningRef.current && sessionIdRef.current) {
+        stopMonitor(sessionIdRef.current).catch(() => {});
+        endSession(sessionIdRef.current).catch(() => {});
+      }
+    };
+  }, [stopMonitor]);
   const milkdownRef = useRef(null);
   const savedRef = useRef({ md: '', title: '' });
   const { startResize } = useResizable({ cssVar: '--rside-width', min: 350, max: 520 });
@@ -148,7 +178,13 @@ export default function Editor() {
         const { sessionId: sid } = await startSession();
         setSessionId(sid);
         setIsLearning(true);
+        try {
+          await startMonitor(sid, user?.userId);
+        } catch {
+          // vision/웹캠 연결 실패해도 학습 세션은 유지
+        }
       } else {
+        await stopMonitor(sessionId);
         if (sessionId) await endSession(sessionId);
         setSessionId(null);
         setIsLearning(false);
@@ -156,7 +192,7 @@ export default function Editor() {
     } catch (e) {
       const code = e.response?.data?.code;
       if (code === 'SESSION_ALREADY_ENDED' || code === 'SESSION_NOT_FOUND') {
-        // 서버에서 이미 종료된 세션 → 상태만 정리
+        await stopMonitor(sessionId);
         setSessionId(null);
         setIsLearning(false);
       } else {
@@ -176,6 +212,7 @@ export default function Editor() {
 
   const handleNavigateToNote = (targetNoteId) => {
     if (targetNoteId === Number(noteId)) return;
+    if (isLearning && !window.confirm('학습 세션이 진행 중이에요. 이동하면 세션이 종료됩니다. 이동하시겠어요?')) return;
     if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 이동하시겠어요?')) return;
     navigate(`/editor/${targetNoteId}`);
   };
@@ -221,6 +258,7 @@ export default function Editor() {
           type="button"
           className="back"
           onClick={() => {
+            if (isLearning && !window.confirm('학습 세션이 진행 중이에요. 나가면 세션이 종료됩니다. 나가시겠어요?')) return;
             if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 나가시겠어요?')) return;
             navigate('/directory');
           }}
@@ -328,6 +366,8 @@ export default function Editor() {
           {charCount.toLocaleString()} / {MAX_CHARS.toLocaleString()}
         </div>
       </div>
+
+      {isLearning && isMonitoring && <FocusMonitor videoRef={videoRef} currentState={currentState} />}
 
       <EditorDock
         lsideOpen={lsideOpen}

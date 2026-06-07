@@ -150,18 +150,18 @@ export default function MyPageModal() {
 
   if (!myPageOpen) return null;
 
+  const handleSessionExpired = () => {
+    logout();
+    setMyPageOpen(false);
+    navigate('/');
+  };
+
   const handleLogout = async () => {
     try {
       await logoutApi();
     } catch {
       // 서버 로그아웃 실패해도 로컬 상태는 초기화
     }
-    logout();
-    setMyPageOpen(false);
-    navigate('/');
-  };
-
-  const handleSessionExpired = () => {
     logout();
     setMyPageOpen(false);
     navigate('/');

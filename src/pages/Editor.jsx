@@ -77,7 +77,7 @@ export default function Editor() {
   const [isSaved, setIsSaved] = useState(!isNew);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const { videoRef, start: startMonitor, stop: stopMonitor, currentState } = useFocusMonitor();
+  const { videoRef, start: startMonitor, stop: stopMonitor, currentState, isMonitoring } = useFocusMonitor();
 
   const isLearningRef = useRef(false);
   const sessionIdRef = useRef(null);
@@ -367,7 +367,7 @@ export default function Editor() {
         </div>
       </div>
 
-      {isLearning && <FocusMonitor videoRef={videoRef} currentState={currentState} />}
+      {isLearning && isMonitoring && <FocusMonitor videoRef={videoRef} currentState={currentState} />}
 
       <EditorDock
         lsideOpen={lsideOpen}

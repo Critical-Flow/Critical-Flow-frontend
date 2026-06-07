@@ -18,7 +18,7 @@ export default function EditorDock({
         onClick={onToggleLside}
         title="L 사이드바"
       >
-        <span className="dock-icon">☰</span>
+        <span className="dock-icon">L</span>
         <span className="tip">L 사이드바</span>
       </button>
       <button
@@ -27,7 +27,7 @@ export default function EditorDock({
         title="R 사이드바"
         disabled={rsideDisabled}
       >
-        <span className="dock-icon">🤖</span>
+        <span className="dock-icon">R</span>
         <span className="tip">R 사이드바</span>
       </button>
       <button

@@ -6,7 +6,7 @@ import { logoutApi, updateProfile, deleteAccount } from '../services/auth';
 import { reembedNotes } from '../services/notes';
 import './MyPageModal.css';
 
-function UserInfoTab({ user, onProfileUpdated }) {
+function UserInfoTab({ user, onProfileUpdated, onSessionExpired }) {
   const [affiliation, setAffiliation] = useState(user?.affiliation ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [isReembedding, setIsReembedding] = useState(false);
@@ -32,8 +32,13 @@ function UserInfoTab({ user, onProfileUpdated }) {
       const updated = await updateProfile({ affiliation });
       onProfileUpdated(updated);
       alert('✅ 저장되었습니다.');
-    } catch {
-      alert('저장에 실패했어요.');
+    } catch (e) {
+      if (e.response?.data?.code === 'USER_NOT_FOUND') {
+        alert('사용자 정보를 찾을 수 없어요. 다시 로그인해주세요.');
+        onSessionExpired();
+      } else {
+        alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -55,14 +60,14 @@ function UserInfoTab({ user, onProfileUpdated }) {
         </div>
       </div>
       <div className="mpm-row">
-        <div className="mpm-row-label">호칭 설정</div>
+        <div className="mpm-row-label">소속 설정</div>
         <div className="mpm-row-body">
           <input
             type="text"
             className="mpm-input"
             value={affiliation}
             onChange={(e) => setAffiliation(e.target.value)}
-            placeholder="소속 또는 호칭을 입력하세요"
+            placeholder="소속을 입력하세요"
           />
           <button className="mpm-btn-sm" onClick={handleSave} disabled={isSaving}>
             {isSaving ? '저장 중' : '저장'}
@@ -146,7 +151,17 @@ export default function MyPageModal() {
   if (!myPageOpen) return null;
 
   const handleLogout = async () => {
-    await logoutApi();
+    try {
+      await logoutApi();
+    } catch {
+      // 서버 로그아웃 실패해도 로컬 상태는 초기화
+    }
+    logout();
+    setMyPageOpen(false);
+    navigate('/');
+  };
+
+  const handleSessionExpired = () => {
     logout();
     setMyPageOpen(false);
     navigate('/');
@@ -159,8 +174,14 @@ export default function MyPageModal() {
       logout();
       setMyPageOpen(false);
       navigate('/');
-    } catch {
-      alert('탈퇴에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } catch (e) {
+      if (e.response?.data?.code === 'USER_NOT_FOUND') {
+        logout();
+        setMyPageOpen(false);
+        navigate('/');
+      } else {
+        alert('탈퇴에 실패했어요. 잠시 후 다시 시도해주세요.');
+      }
     }
   };
 
@@ -201,7 +222,7 @@ export default function MyPageModal() {
           <main className="mpm-main">
             {activeTab === 'user' ? (
               <>
-                <UserInfoTab user={user} onProfileUpdated={updateUser} />
+                <UserInfoTab user={user} onProfileUpdated={updateUser} onSessionExpired={handleSessionExpired} />
                 <div className="mpm-danger-zone">
                   <button className="mpm-btn-danger" onClick={handleDeleteAccount}>회원 탈퇴</button>
                 </div>

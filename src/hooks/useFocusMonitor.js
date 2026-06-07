@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import useWebcam from './useWebcam';
 import { startVision, sendFrame, stopVision } from '../services/vision';
 
@@ -36,6 +36,13 @@ export default function useFocusMonitor() {
     stopWebcam();
     setIsMonitoring(false);
     setCurrentState('GOOD');
+  }, [stopWebcam]);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalRef.current);
+      stopWebcam();
+    };
   }, [stopWebcam]);
 
   return { videoRef, start, stop, currentState, isMonitoring };

@@ -78,6 +78,33 @@ export default function Editor() {
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const { videoRef, start: startMonitor, stop: stopMonitor, currentState } = useFocusMonitor();
+
+  const isLearningRef = useRef(false);
+  const sessionIdRef = useRef(null);
+  useEffect(() => { isLearningRef.current = isLearning; }, [isLearning]);
+  useEffect(() => { sessionIdRef.current = sessionId; }, [sessionId]);
+
+  // 새로고침/탭 닫기 시 학습 중 경고
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isLearningRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  // 언마운트 시 학습 세션 자동 종료
+  useEffect(() => {
+    return () => {
+      if (isLearningRef.current && sessionIdRef.current) {
+        stopMonitor(sessionIdRef.current).catch(() => {});
+        endSession(sessionIdRef.current).catch(() => {});
+      }
+    };
+  }, [stopMonitor]);
   const milkdownRef = useRef(null);
   const savedRef = useRef({ md: '', title: '' });
   const { startResize } = useResizable({ cssVar: '--rside-width', min: 350, max: 520 });
@@ -185,6 +212,7 @@ export default function Editor() {
 
   const handleNavigateToNote = (targetNoteId) => {
     if (targetNoteId === Number(noteId)) return;
+    if (isLearning && !window.confirm('학습 세션이 진행 중이에요. 이동하면 세션이 종료됩니다. 이동하시겠어요?')) return;
     if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 이동하시겠어요?')) return;
     navigate(`/editor/${targetNoteId}`);
   };
@@ -230,6 +258,7 @@ export default function Editor() {
           type="button"
           className="back"
           onClick={() => {
+            if (isLearning && !window.confirm('학습 세션이 진행 중이에요. 나가면 세션이 종료됩니다. 나가시겠어요?')) return;
             if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 나가시겠어요?')) return;
             navigate('/directory');
           }}

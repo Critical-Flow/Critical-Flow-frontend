@@ -226,12 +226,19 @@ export default function Editor() {
   }
 
   if (noteError) {
-    const isAccessDenied = noteError.response?.data?.code === 'NOTE_ACCESS_DENIED';
+    const code = noteError.response?.data?.code;
+    const message =
+      code === 'NOTE_ACCESS_DENIED' ? '이 노트에 접근 권한이 없어요.' :
+      code === 'NOTE_NOT_FOUND' ? '노트를 찾을 수 없어요.' :
+      '노트를 불러오지 못했어요.';
+    const onRetry = (code === 'NOTE_ACCESS_DENIED' || code === 'NOTE_NOT_FOUND') ? undefined : refetchNote;
     return (
       <div className="app">
         <ErrorMessage
-          message={isAccessDenied ? '이 노트에 접근 권한이 없어요.' : '노트를 불러오지 못했어요.'}
-          onRetry={isAccessDenied ? undefined : refetchNote}
+          message={message}
+          onRetry={onRetry}
+          onAction={code === 'NOTE_NOT_FOUND' ? () => navigate('/directory') : undefined}
+          actionLabel={code === 'NOTE_NOT_FOUND' ? '디렉토리로 돌아가기' : undefined}
         />
       </div>
     );

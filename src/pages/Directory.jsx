@@ -101,8 +101,17 @@ export default function Directory() {
       await deleteNote(noteId, user?.userId);
       await refetchNotes();
       if (paginated.length === 1 && page > 1) setPage((p) => p - 1);
-    } catch {
-      alert('삭제에 실패했어요.');
+    } catch (e) {
+      const code = e.response?.data?.code;
+      if (code === 'NOTE_NOT_FOUND') {
+        cacheRef.current.clear();
+        await refetchNotes();
+        if (paginated.length === 1 && page > 1) setPage((p) => p - 1);
+      } else if (code === 'NOTE_ACCESS_DENIED') {
+        alert('이 노트에 접근 권한이 없어요.');
+      } else {
+        alert('삭제에 실패했어요.');
+      }
     }
   };
 
@@ -111,8 +120,16 @@ export default function Directory() {
       await updateCategory(editingFolder.categoryId, { title, description });
       setEditingFolder(null);
       refetchFolders();
-    } catch {
-      alert('수정에 실패했어요.');
+    } catch (e) {
+      const code = e.response?.data?.code;
+      if (code === 'CATEGORY_NOT_FOUND') {
+        setEditingFolder(null);
+        refetchFolders();
+      } else if (code === 'INVALID_REQUEST_BODY') {
+        alert('입력값을 확인해주세요.');
+      } else {
+        alert('수정에 실패했어요.');
+      }
     }
   };
 

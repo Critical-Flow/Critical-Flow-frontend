@@ -78,12 +78,17 @@ export default function useTutorChat(noteId) {
       setConversations((prev) => markLatest([localConv, ...prev.map((c) => ({ ...c, isLatest: false }))]));
       setActiveId(localConv.id);
       setMode('chat');
-    } catch {
+    } catch (e) {
+      const code = e.response?.data?.code;
+      const errorMsg =
+        code === 'CONVERSATION_NOTE_NOT_FOUND' ? '노트를 찾을 수 없어요.' :
+        code === 'AI_RESPONSE_FAILED' ? 'AI 응답에 실패했어요. 잠시 후 다시 시도해주세요.' :
+        '대화를 시작하지 못했어요. 잠시 후 다시 시도해주세요.';
       const localConv = {
         id: crypto.randomUUID(),
         conversationId: null,
         title: '새 대화',
-        messages: [makeMessage('assistant', '대화를 시작하지 못했어요. 잠시 후 다시 시도해주세요.')],
+        messages: [makeMessage('assistant', errorMsg)],
         updatedAt: new Date().toISOString(),
         isLatest: false,
       };
@@ -200,8 +205,13 @@ export default function useTutorChat(noteId) {
         } else {
           appendToActive(active.id, makeMessage('assistant', '대화 세션이 없습니다. 새 대화를 시작해주세요.'));
         }
-      } catch {
-        appendToActive(active.id, makeMessage('assistant', '응답을 가져오지 못했어요. 잠시 후 다시 시도해주세요.'));
+      } catch (e) {
+        const code = e.response?.data?.code;
+        const errorMsg =
+          code === 'CONVERSATION_NOT_FOUND' ? '대화를 찾을 수 없어요. 새 대화를 시작해주세요.' :
+          code === 'AI_RESPONSE_FAILED' ? 'AI 응답에 실패했어요. 잠시 후 다시 시도해주세요.' :
+          '응답을 가져오지 못했어요. 잠시 후 다시 시도해주세요.';
+        appendToActive(active.id, makeMessage('assistant', errorMsg));
       } finally {
         setIsSending(false);
       }

@@ -6,11 +6,13 @@ import MilkdownEditor from '../components/MilkdownEditor';
 import EditorToolbar from '../components/EditorToolbar';
 import EditorDock from '../components/EditorDock';
 import TutorPanel from '../components/TutorPanel';
+import FocusMonitor from '../components/FocusMonitor';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import useFetch from '../hooks/useFetch';
 import useToggle from '../hooks/useToggle';
 import useResizable from '../hooks/useResizable';
+import useFocusMonitor from '../hooks/useFocusMonitor';
 import { getNote, saveNote, getFolders, getNotes } from '../services/notes';
 import { startSession, endSession } from '../services/session';
 
@@ -75,6 +77,7 @@ export default function Editor() {
   const [isSaved, setIsSaved] = useState(!isNew);
   const [isLearning, setIsLearning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
+  const { videoRef, start: startMonitor, stop: stopMonitor, currentState } = useFocusMonitor();
   const milkdownRef = useRef(null);
   const savedRef = useRef({ md: '', title: '' });
   const { startResize } = useResizable({ cssVar: '--rside-width', min: 350, max: 520 });
@@ -148,7 +151,13 @@ export default function Editor() {
         const { sessionId: sid } = await startSession();
         setSessionId(sid);
         setIsLearning(true);
+        try {
+          await startMonitor(sid, user?.userId);
+        } catch {
+          // vision/웹캠 연결 실패해도 학습 세션은 유지
+        }
       } else {
+        await stopMonitor(sessionId);
         if (sessionId) await endSession(sessionId);
         setSessionId(null);
         setIsLearning(false);
@@ -156,7 +165,7 @@ export default function Editor() {
     } catch (e) {
       const code = e.response?.data?.code;
       if (code === 'SESSION_ALREADY_ENDED' || code === 'SESSION_NOT_FOUND') {
-        // 서버에서 이미 종료된 세션 → 상태만 정리
+        await stopMonitor(sessionId);
         setSessionId(null);
         setIsLearning(false);
       } else {
@@ -328,6 +337,8 @@ export default function Editor() {
           {charCount.toLocaleString()} / {MAX_CHARS.toLocaleString()}
         </div>
       </div>
+
+      {isLearning && <FocusMonitor videoRef={videoRef} currentState={currentState} />}
 
       <EditorDock
         lsideOpen={lsideOpen}

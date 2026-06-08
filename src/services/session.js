@@ -20,3 +20,13 @@ export async function endSession(sessionId) {
   const { data } = await api.post(`/api/v1/sessions/${sessionId}/end`);
   return data;
 }
+
+export async function getSessions() {
+  const { data } = await api.get('/api/v1/sessions');
+  return data;
+}
+
+export async function getActiveSession() {
+  const { data } = await api.get('/api/v1/sessions/active');
+  return data;
+}

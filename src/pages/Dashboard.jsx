@@ -33,13 +33,9 @@ function getStudyMinutes(session) {
 }
 
 function calcStats(sessions, notes, folders) {
-  // 총 학습 시간 (분)
   const totalMinutes = sessions.reduce((sum, s) => sum + getStudyMinutes(s), 0);
-
-  // 집중률
-  const totalStudy = sessions.reduce((sum, s) => sum + getStudyMinutes(s), 0);
   const totalFocus = sessions.reduce((sum, s) => sum + (s.totalFocusMinutes ?? 0), 0);
-  const focusRate = totalStudy > 0 ? Math.round((totalFocus / totalStudy) * 100) : 0;
+  const focusRate = totalMinutes > 0 ? Math.round((totalFocus / totalMinutes) * 100) : 0;
 
   // 오늘의 집중도
   const todayStr = new Date().toDateString();
@@ -94,11 +90,11 @@ function formatMinutes(minutes) {
 export default function Dashboard() {
   const { user } = useAuth();
   const { data: sessions, loading: sLoading, error: sError, refetch: refetchSessions } = useFetch(getSessions);
-  const { data: notes, loading: nLoading, error: nError } = useFetch(
+  const { data: notes, loading: nLoading, error: nError, refetch: refetchNotes } = useFetch(
     () => getNotes({ userId: user?.userId }),
     [user?.userId],
   );
-  const { data: folders, loading: fLoading, error: fError } = useFetch(getFolders);
+  const { data: folders, loading: fLoading, error: fError, refetch: refetchFolders } = useFetch(getFolders);
 
   const loading = sLoading || nLoading || fLoading;
   const error = sError || nError || fError;
@@ -115,7 +111,10 @@ export default function Dashboard() {
     return (
       <AppLayout>
         <div className="dash-container">
-          <ErrorMessage message="학습 통계를 불러오지 못했어요." onRetry={refetchSessions} />
+          <ErrorMessage
+              message="학습 통계를 불러오지 못했어요."
+              onRetry={() => { refetchSessions(); refetchNotes(); refetchFolders(); }}
+            />
         </div>
       </AppLayout>
     );

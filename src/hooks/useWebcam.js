@@ -24,6 +24,11 @@ export default function useWebcam() {
   const captureFrame = useCallback(() => {
     const video = videoRef.current;
     if (!video || !streamRef.current) return Promise.resolve(null);
+    // stream이 video에 연결 안 된 경우 재연결 (렌더링 타이밍 이슈 방어)
+    if (!video.srcObject) {
+      video.srcObject = streamRef.current;
+    }
+    if (video.videoWidth === 0) return Promise.resolve(null); // 아직 로딩 중
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;

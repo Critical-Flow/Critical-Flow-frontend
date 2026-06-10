@@ -25,16 +25,23 @@ const TOOLTIP_STYLE = {
 };
 
 function getStudyMinutes(session) {
-  if (session.totalStudyMinutes != null) return session.totalStudyMinutes;
+  if (session.totalStudyMinutes) return session.totalStudyMinutes;
   if (session.startTime && session.endTime) {
     return Math.round((new Date(session.endTime) - new Date(session.startTime)) / 60000);
   }
   return 0;
 }
 
+function getFocusMinutes(session) {
+  if (session.totalFocusMinutes) return session.totalFocusMinutes;
+  const studyMin = getStudyMinutes(session);
+  const nonFocusSec = (session.absentSeconds ?? 0) + (session.drowsySeconds ?? 0);
+  return Math.max(0, studyMin - Math.round(nonFocusSec / 60));
+}
+
 function calcStats(sessions, notes, folders) {
   const totalMinutes = sessions.reduce((sum, s) => sum + getStudyMinutes(s), 0);
-  const totalFocus = sessions.reduce((sum, s) => sum + (s.totalFocusMinutes ?? 0), 0);
+  const totalFocus = sessions.reduce((sum, s) => sum + getFocusMinutes(s), 0);
   const focusRate = totalMinutes > 0 ? Math.round((totalFocus / totalMinutes) * 100) : 0;
 
   // 오늘의 집중도
@@ -51,7 +58,7 @@ function calcStats(sessions, notes, folders) {
     const dayStr = d.toDateString();
     const daySessions = sessions.filter((s) => new Date(s.startTime).toDateString() === dayStr);
     const studyMin = daySessions.reduce((sum, s) => sum + getStudyMinutes(s), 0);
-    const focusMin = daySessions.reduce((sum, s) => sum + (s.totalFocusMinutes ?? 0), 0);
+    const focusMin = daySessions.reduce((sum, s) => sum + getFocusMinutes(s), 0);
     return {
       day: DAYS[d.getDay()],
       study: Math.round((studyMin / 60) * 10) / 10,

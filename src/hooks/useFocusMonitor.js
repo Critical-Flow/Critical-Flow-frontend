@@ -9,13 +9,18 @@ export default function useFocusMonitor() {
   const intervalRef = useRef(null);
   const { videoRef, startWebcam, stopWebcam, captureFrame } = useWebcam();
 
-  const start = useCallback(async (sessionId, userId) => {
+  const start = useCallback(async () => {
     // FocusMonitor(<video> 태그)를 먼저 DOM에 렌더링한 뒤 웹캠 시작
     setIsMonitoring(true);
     setCurrentState('GOOD');
     // React 렌더링 완료까지 대기 (videoRef.current 가 null 이면 stream 연결 불가)
     await new Promise((resolve) => setTimeout(resolve, 100));
-    await startWebcam();
+    try {
+      await startWebcam();
+    } catch {
+      setIsMonitoring(false);
+      return;
+    }
     // startVision 제거 — Spring /api/v1/sessions 에서 Python /vision/start 자동 호출
     intervalRef.current = setInterval(async () => {
       const frameBlob = await captureFrame();
@@ -29,7 +34,7 @@ export default function useFocusMonitor() {
     }, 1000);
   }, [startWebcam, captureFrame]);
 
-  const stop = useCallback(async (sessionId) => {
+  const stop = useCallback(async () => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
     // stopVision 제거 — Spring /api/v1/sessions/{id}/end 에서 Python /vision/stop 자동 호출

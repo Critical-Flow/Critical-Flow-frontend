@@ -100,7 +100,7 @@ export default function Editor() {
   useEffect(() => {
     return () => {
       if (isLearningRef.current && sessionIdRef.current) {
-        stopMonitor(sessionIdRef.current).catch(() => {});
+        stopMonitor().catch(() => {});
         endSession(sessionIdRef.current).catch(() => {});
       }
     };
@@ -179,12 +179,12 @@ export default function Editor() {
         setSessionId(sid);
         setIsLearning(true);
         try {
-          await startMonitor(sid, user?.userId);
+          await startMonitor();
         } catch {
           // vision/웹캠 연결 실패해도 학습 세션은 유지
         }
       } else {
-        await stopMonitor(sessionId);
+        await stopMonitor();
         if (sessionId) await endSession(sessionId);
         setSessionId(null);
         setIsLearning(false);
@@ -192,7 +192,7 @@ export default function Editor() {
     } catch (e) {
       const code = e.response?.data?.code;
       if (code === 'SESSION_ALREADY_ENDED' || code === 'SESSION_NOT_FOUND') {
-        await stopMonitor(sessionId);
+        await stopMonitor();
         setSessionId(null);
         setIsLearning(false);
       } else {

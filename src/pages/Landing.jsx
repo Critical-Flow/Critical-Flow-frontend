@@ -16,8 +16,8 @@ export default function Landing() {
       <nav className="nav">
         <div className="nav-inner">
           <div className="logo">
-            <div className="logo-mark">M</div>
-            <span>MarkLearn</span>
+            <div className="logo-mark">A</div>
+            <span>AICE</span>
           </div>
           <div className="nav-menu">
             <a href="#about">소개</a>

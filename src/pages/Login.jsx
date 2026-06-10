@@ -8,7 +8,7 @@ export default function Login() {
     <>
       <div className="login-wrap">
         <div className="login-card">
-          <div className="login-logo-mark">M</div>
+          <div className="login-logo-mark">A</div>
           <h1>다시 오신 걸 환영해요</h1>
           <p>GitHub 계정으로 간편하게 시작하세요.</p>
           <a href={GITHUB_OAUTH_URL} className="gh-btn">
@@ -31,7 +31,7 @@ export default function Login() {
           <a href="#">개인정보처리방침</a>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
-        <div>© 2026 MarkLearn — 영남대학교 컴퓨터공학과 졸업작품</div>
+        <div>© 2026 Project AICE — 영남대학교 컴퓨터공학과 졸업작품</div>
       </footer>
     </>
   );

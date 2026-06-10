@@ -10,7 +10,7 @@ export default function Footer() {
         <a href="#">개인정보처리방침</a>
         <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
-      <div>© 2026 MarkLearn — 영남대학교 컴퓨터공학과 졸업작품</div>
+      <div>© 2026 Project AICE — 영남대학교 컴퓨터공학과 졸업작품</div>
     </footer>
   );
 }

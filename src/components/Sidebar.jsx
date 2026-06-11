@@ -19,9 +19,9 @@ export default function Sidebar({ isGuest = false }) {
 
   return (
     <aside className="sidebar">
-      <Link className="brand" to="/">
-        <div className="s-logo">M</div>
-        <span>MarkLearn</span>
+      <Link className="brand" to={dashPath}>
+        <div className="s-logo">A</div>
+        <span>AICE</span>
       </Link>
       <nav>
         <Link to={dashPath} className={active(['/dashboard', '/dashboard-empty'])}>📊 대시보드</Link>

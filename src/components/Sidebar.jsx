@@ -19,7 +19,7 @@ export default function Sidebar({ isGuest = false }) {
 
   return (
     <aside className="sidebar">
-      <Link className="brand" to="/">
+      <Link className="brand" to={dashPath}>
         <div className="s-logo">M</div>
         <span>MarkLearn</span>
       </Link>

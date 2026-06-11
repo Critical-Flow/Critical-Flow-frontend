@@ -21,10 +21,12 @@ export default function TutorPanel({ noteId, hidden }) {
   } = useTutorChat(noteId);
   const [input, setInput] = useState('');
   const [view, setView] = useState('chat');
-  const bottomRef = useRef(null);
+  const chatWindowRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = chatWindowRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
   }, [messages, isSending]);
 
   const active = conversations.find((c) => c.id === activeId);
@@ -106,7 +108,7 @@ export default function TutorPanel({ noteId, hidden }) {
         </div>
       ) : (
         <>
-          <div className="chat-window">
+          <div className="chat-window" ref={chatWindowRef}>
             {isLoadingMessages ? (
               <p className="chat-empty">대화 불러오는 중…</p>
             ) : (
@@ -121,7 +123,6 @@ export default function TutorPanel({ noteId, hidden }) {
                   </div>
                 ))}
                 {isSending && <div className="bubble left">답변 작성 중…</div>}
-                <div ref={bottomRef} />
               </>
             )}
           </div>

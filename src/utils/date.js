@@ -3,8 +3,17 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const WEEK = 7 * DAY;
 
+function parseUtc(value) {
+  if (value instanceof Date) return value;
+  // 백엔드가 Z 없이 UTC 시간을 반환하는 경우 Z 추가
+  if (typeof value === 'string' && !value.endsWith('Z') && !/[+-]\d{2}:?\d{2}$/.test(value)) {
+    return new Date(value + 'Z');
+  }
+  return new Date(value);
+}
+
 export function formatRelativeTime(value) {
-  const target = value instanceof Date ? value : new Date(value);
+  const target = parseUtc(value);
   if (Number.isNaN(target.getTime())) return '';
 
   const diff = Date.now() - target.getTime();
@@ -24,7 +33,7 @@ export function formatRelativeTime(value) {
 }
 
 export function formatTime(value) {
-  const target = value instanceof Date ? value : new Date(value);
+  const target = parseUtc(value);
   if (Number.isNaN(target.getTime())) return '';
   const hh = String(target.getHours()).padStart(2, '0');
   const mm = String(target.getMinutes()).padStart(2, '0');

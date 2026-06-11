@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useTutorChat from '../hooks/useTutorChat';
 import { formatTime, formatRelativeTime } from '../utils/date';
 
@@ -21,6 +21,11 @@ export default function TutorPanel({ noteId, hidden }) {
   } = useTutorChat(noteId);
   const [input, setInput] = useState('');
   const [view, setView] = useState('chat');
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isSending]);
 
   const active = conversations.find((c) => c.id === activeId);
 
@@ -116,6 +121,7 @@ export default function TutorPanel({ noteId, hidden }) {
                   </div>
                 ))}
                 {isSending && <div className="bubble left">답변 작성 중…</div>}
+                <div ref={bottomRef} />
               </>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useTutorChat from '../hooks/useTutorChat';
 import { formatTime, formatRelativeTime } from '../utils/date';
 
@@ -21,6 +21,13 @@ export default function TutorPanel({ noteId, hidden }) {
   } = useTutorChat(noteId);
   const [input, setInput] = useState('');
   const [view, setView] = useState('chat');
+  const chatWindowRef = useRef(null);
+
+  useEffect(() => {
+    const el = chatWindowRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, [messages, isSending, view]);
 
   const active = conversations.find((c) => c.id === activeId);
 
@@ -101,7 +108,7 @@ export default function TutorPanel({ noteId, hidden }) {
         </div>
       ) : (
         <>
-          <div className="chat-window">
+          <div className="chat-window" ref={chatWindowRef}>
             {isLoadingMessages ? (
               <p className="chat-empty">대화 불러오는 중…</p>
             ) : (

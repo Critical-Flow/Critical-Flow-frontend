@@ -17,7 +17,7 @@ function serverMessagesToLocal(serverMessages) {
     id: String(m.messageId),
     role: m.role.toLowerCase() === 'user' ? 'user' : 'assistant',
     content: m.content,
-    timestamp: m.createdAt,
+    timestamp: m.createdAt ?? m.timestamp ?? null,
   }));
 }
 
@@ -144,10 +144,16 @@ export default function useTutorChat(noteId) {
       try {
         const serverMessages = await getMessages(conv.conversationId);
         const localMessages = serverMessagesToLocal(serverMessages);
+        const lastTimestamp = localMessages[localMessages.length - 1]?.timestamp ?? null;
         setConversations((prev) =>
           prev.map((c) =>
             c.id === id
-              ? { ...c, messages: localMessages, title: deriveTitleFromMessages(localMessages) }
+              ? {
+                  ...c,
+                  messages: localMessages,
+                  title: deriveTitleFromMessages(localMessages),
+                  updatedAt: c.updatedAt ?? lastTimestamp,
+                }
               : c,
           ),
         );

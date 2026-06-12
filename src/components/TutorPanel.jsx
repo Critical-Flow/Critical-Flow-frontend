@@ -27,7 +27,7 @@ export default function TutorPanel({ noteId, hidden }) {
     const el = chatWindowRef.current;
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-  }, [messages, isSending]);
+  }, [messages, isSending, view]);
 
   const active = conversations.find((c) => c.id === activeId);
 

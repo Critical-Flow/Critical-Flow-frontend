@@ -96,10 +96,13 @@
 /* 히어로 */
 .hero {
   background: linear-gradient(180deg, var(--green-1) 0%, #8DD6B6 100%);
-  padding: 96px 24px 120px;
+  min-height: 100svh;
+  padding: 96px 24px;
   text-align: center;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .hero::before,
@@ -188,7 +191,11 @@
 
 /* 섹션 공통 */
 section.block {
+  min-height: 100svh;
   padding: 96px 24px;
+  display: flex;
+  align-items: center;
+  scroll-margin-top: 84px;
 }
 
 .section-title {
@@ -206,6 +213,11 @@ section.block {
 /* 소개 */
 .about {
   background: var(--olive);
+}
+
+.about .container,
+.features .container {
+  width: 100%;
 }
 
 .about-grid {
@@ -255,6 +267,11 @@ section.block {
 /* 기능 */
 .features {
   background: var(--gray);
+}
+
+.features .container {
+  display: flex;
+  flex-direction: column;
 }
 
 .features-head {

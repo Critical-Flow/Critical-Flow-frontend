@@ -130,8 +130,27 @@
   right: -80px;
 }
 
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* 히어로 → 소개 색 연결 */
+.hero-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  background: linear-gradient(180deg, rgba(141, 214, 182, 0) 0%, var(--olive) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
 .hero-inner {
   position: relative;
+  z-index: 1;
   max-width: 880px;
   margin: 0 auto;
 }
@@ -213,6 +232,31 @@ section.block {
 /* 소개 */
 .about {
   background: var(--olive);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* 소개 → 기능 색 연결 */
+.about::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(240, 250, 246, 0) 0%, var(--gray) 100%);
+  pointer-events: none;
+}
+
+.about .container {
+  position: relative;
+  z-index: 1;
 }
 
 .about .container,
@@ -234,7 +278,8 @@ section.block {
   color: #1a3d32;
 }
 
-.about-card .tag {
+.about-card .tag,
+.features-head .tag {
   font-size: 13px;
   font-weight: 700;
   color: #2d5a4a;
@@ -348,4 +393,157 @@ section.block {
   .feature-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== React Bits 오버라이드 ===== */
+
+/* ScrollFloat: 기존 제목 타이포그래피 유지 */
+.landing .about-card .scroll-float-text {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.3;
+}
+
+.landing .features-head .section-title.scroll-float {
+  margin: 0;
+}
+
+.landing .features-head .scroll-float-text {
+  font-size: clamp(26px, 3.4vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.3;
+}
+
+/* CardSwap: 소개 섹션 우측 카드 스택 */
+.landing .about-swap {
+  position: relative;
+  height: 320px;
+  margin-top: 18px;
+}
+
+.landing .about-swap .card-swap-container {
+  position: absolute;
+  bottom: auto;
+  right: 40px;
+  top: 55%;
+  transform: translateY(-50%);
+}
+
+.landing .about-swap .card {
+  background: #fff;
+  border: 1px solid rgba(59, 158, 133, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(26, 61, 50, 0.2);
+  padding: 26px;
+  text-align: left;
+  color: #1f3d30;
+}
+
+.landing .about-swap .swap-ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--green-2), var(--olive));
+  margin-bottom: 14px;
+}
+
+.landing .about-swap .card h4 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #1a3d32;
+}
+
+.landing .about-swap .card p {
+  margin-top: 8px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #2d5a4a;
+}
+
+@media (max-width: 780px) {
+  .landing .about-swap {
+    height: 280px;
+  }
+
+  .landing .about-swap .card-swap-container {
+    right: 50%;
+    transform: translate(50%, -50%) scale(0.85);
+  }
+}
+
+/* Carousel: 모바일에서 기능 그리드 대체 */
+.landing .feature-carousel {
+  display: none;
+}
+
+.landing .feature-carousel .carousel-container {
+  margin: 0 auto;
+  border-color: #dcefe7;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.landing .feature-carousel .carousel-item {
+  background: #fff;
+  border-color: #e3f2ec;
+}
+
+.landing .feature-carousel .carousel-icon-container {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--green-2), var(--olive));
+}
+
+.landing .carousel-icon-emoji {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.landing .feature-carousel .carousel-item-title {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.landing .feature-carousel .carousel-item-description {
+  color: var(--sub);
+}
+
+.landing .feature-carousel .carousel-indicator.active {
+  background-color: var(--primary);
+}
+
+.landing .feature-carousel .carousel-indicator.inactive {
+  background-color: rgba(59, 158, 133, 0.3);
+}
+
+@media (max-width: 780px) {
+  .landing .feature-grid {
+    display: none;
+  }
+
+  .landing .feature-carousel {
+    display: block;
+  }
+}
+
+/* GlareHover: 카드 내부 레이아웃 원본 유지 */
+.landing .feature.glare-hover {
+  display: block;
+  cursor: default;
+}
+
+.landing .feature.glare-hover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.landing .feature.glare-hover::before {
+  z-index: 2;
+  pointer-events: none;
 }

@@ -532,6 +532,7 @@ section.block {
 .landing .feature.glare-hover {
   display: block;
   cursor: default;
+  height: 100%;
 }
 
 .landing .feature.glare-hover > * {

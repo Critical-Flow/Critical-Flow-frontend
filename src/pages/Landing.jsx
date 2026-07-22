@@ -8,7 +8,6 @@ import GlareHover from '../components/reactbits/GlareHover';
 import Grainient from '../components/reactbits/Grainient';
 import CardSwap, { Card } from '../components/reactbits/CardSwap';
 import Carousel from '../components/reactbits/Carousel';
-import Aurora from '../components/reactbits/Aurora';
 import './Landing.css';
 
 const GitHubIcon = () => (
@@ -139,14 +138,6 @@ export default function Landing() {
       </header>
 
       <section className="block about" id="about">
-        <div className="about-bg" aria-hidden="true">
-          <Aurora
-            colorStops={['#5CBD9E', '#2E8A72', '#8DD6B6']}
-            amplitude={1}
-            blend={0.5}
-            speed={0.7}
-          />
-        </div>
         <div className="container about-grid">
           <div className="about-card">
             <div className="tag">WHO WE ARE</div>

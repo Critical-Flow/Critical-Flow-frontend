@@ -260,9 +260,19 @@ section.block {
 
 .about-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 64px;
-  align-items: start;
+  align-items: center;
+}
+
+.about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.about-visual {
+  position: relative;
 }
 
 .about-card h2 {
@@ -289,17 +299,10 @@ section.block {
   line-height: 1.7;
 }
 
-.about-right {
-  text-align: right;
-}
-
 @media (max-width: 780px) {
   .about-grid {
     grid-template-columns: 1fr;
     gap: 36px;
-  }
-  .about-right {
-    text-align: left;
   }
 }
 
@@ -413,16 +416,15 @@ section.block {
 /* CardSwap: 소개 섹션 우측 카드 스택 */
 .landing .about-swap {
   position: relative;
-  height: 320px;
-  margin-top: 18px;
+  height: 380px;
 }
 
 .landing .about-swap .card-swap-container {
   position: absolute;
   bottom: auto;
-  right: 40px;
+  right: 50%;
   top: 55%;
-  transform: translateY(-50%);
+  transform: translate(50%, -50%);
 }
 
 .landing .about-swap .card {

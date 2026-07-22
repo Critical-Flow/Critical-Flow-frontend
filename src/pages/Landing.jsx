@@ -139,15 +139,21 @@ export default function Landing() {
 
       <section className="block about" id="about">
         <div className="container about-grid">
-          <div className="about-card">
-            <div className="tag">WHO WE ARE</div>
-            <ScrollFloat>누가 만들었나요?</ScrollFloat>
-            <p>영남대학교 컴퓨터공학과 학생들이 졸업 작품으로 만든 학습 플랫폼입니다.
-              스스로 공부하며 느꼈던 불편함을 해결하기 위해, 학습자에게 가장 가까이 있는 우리가 직접 설계했습니다.</p>
+          <div className="about-text">
+            <div className="about-card">
+              <div className="tag">WHO WE ARE</div>
+              <ScrollFloat>누가 만들었나요?</ScrollFloat>
+              <p>영남대학교 컴퓨터공학과 학생들이 졸업 작품으로 만든 학습 플랫폼입니다.
+                스스로 공부하며 느꼈던 불편함을 해결하기 위해, 학습자에게 가장 가까이 있는 우리가 직접 설계했습니다.</p>
+            </div>
+            <div className="about-card">
+              <div className="tag">ABOUT THE SERVICE</div>
+              <ScrollFloat>어떤 사이트인가요?</ScrollFloat>
+              <p>마크다운 노트 작성, AI 기반 퀴즈와 피드백, 학습 시간 통계 대시보드를 제공하는 통합 학습 도구입니다.
+                IoT 기기와 연동되는 학습자 상태 인식 기능을 통해, 더 똑똑한 복습 사이클을 만들어 드립니다.</p>
+            </div>
           </div>
-          <div className="about-card about-right">
-            <div className="tag">ABOUT THE SERVICE</div>
-            <ScrollFloat>어떤 사이트인가요?</ScrollFloat>
+          <div className="about-visual">
             <div className="about-swap">
               <CardSwap
                 width={340}

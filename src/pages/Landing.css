@@ -1,3 +1,9 @@
+/* 풀페이지 스냅: Landing 마운트 중에만 html에 클래스가 부여됨 */
+html.landing-snap {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
 .landing {
   --pink: #3B9E85;
   --green-1: #5CBD9E;
@@ -13,6 +19,7 @@
 
 /* 상단 홍보띠 */
 .promo-bar {
+  scroll-snap-align: start;
   background: var(--pink);
   text-align: center;
   padding: 10px 16px;
@@ -95,6 +102,8 @@
 
 /* 히어로 */
 .hero {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   background: linear-gradient(180deg, var(--green-1) 0%, #8DD6B6 100%);
   min-height: 100svh;
   padding: 96px 24px;
@@ -214,7 +223,9 @@ section.block {
   padding: 96px 24px;
   display: flex;
   align-items: center;
-  scroll-margin-top: 84px;
+  scroll-margin-top: 60px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .section-title {
@@ -384,6 +395,11 @@ section.block {
 
 .features-cta-wrap {
   text-align: center;
+}
+
+/* 푸터: 페이지 끝을 스냅 지점으로 */
+.landing .app-footer {
+  scroll-snap-align: end;
 }
 
 @media (max-width: 780px) {

@@ -1,4 +1,4 @@
-﻿import { useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import TextType from '../components/reactbits/TextType';
@@ -77,6 +77,12 @@ const FEATURE_GLARE_PROPS = {
 
 export default function Landing() {
   const featuresHeadRef = useRef(null);
+
+  // 랜딩 페이지가 떠 있는 동안에만 html에 풀페이지 스냅 클래스 부여
+  useEffect(() => {
+    document.documentElement.classList.add('landing-snap');
+    return () => document.documentElement.classList.remove('landing-snap');
+  }, []);
 
   return (
     <div className="landing">

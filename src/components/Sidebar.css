@@ -103,3 +103,49 @@
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
 }
+
+@media (max-width: 780px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .sidebar .brand {
+    padding: 12px 14px;
+    border-bottom: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .sidebar nav {
+    flex: 1;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .sidebar nav a {
+    white-space: nowrap;
+    padding: 8px 12px;
+  }
+
+  .s-bottom {
+    flex-direction: row;
+    align-items: center;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+  }
+
+  .s-affiliation {
+    display: none;
+  }
+
+  .s-user {
+    padding: 0 10px 0 0;
+  }
+}

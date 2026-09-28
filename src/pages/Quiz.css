@@ -150,3 +150,21 @@
 .btn-ghost:hover {
   background: #f3f4f6;
 }
+
+@media (max-width: 640px) {
+  .quiz-container {
+    padding: 20px 16px;
+  }
+
+  .q-card {
+    padding: 20px;
+  }
+
+  .q-text {
+    font-size: 17px;
+  }
+
+  .q-actions {
+    flex-wrap: wrap;
+  }
+}

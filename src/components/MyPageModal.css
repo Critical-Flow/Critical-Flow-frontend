@@ -317,3 +317,49 @@
   background: var(--primary-2);
   transform: translateY(-1px);
 }
+
+@media (max-width: 640px) {
+  .mpm-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .mpm-body {
+    flex-direction: column;
+  }
+
+  .mpm-sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .mpm-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+  }
+
+  .mpm-tab {
+    white-space: nowrap;
+  }
+
+  .mpm-danger-zone {
+    margin-top: 0;
+    padding: 8px;
+  }
+
+  .mpm-row {
+    flex-wrap: wrap;
+  }
+
+  .mpm-row-label {
+    width: 100%;
+  }
+
+  .mpm-row-body {
+    flex-wrap: wrap;
+  }
+}

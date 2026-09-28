@@ -9,3 +9,9 @@
   flex-direction: column;
   min-width: 0;
 }
+
+@media (max-width: 780px) {
+  .app-layout {
+    flex-direction: column;
+  }
+}

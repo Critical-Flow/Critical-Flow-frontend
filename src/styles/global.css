@@ -157,6 +157,7 @@ select:focus {
   display: grid;
   place-items: center;
   font-size: 36px;
+  color: var(--color-teal-600);
   margin-bottom: 20px;
 }
 

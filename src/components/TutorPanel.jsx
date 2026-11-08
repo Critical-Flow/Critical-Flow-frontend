@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Menu, ChevronLeft, Plus, X, ArrowUp } from 'lucide-react';
 import useTutorChat from '../hooks/useTutorChat';
 import { formatTime, formatRelativeTime } from '../utils/date';
 
@@ -58,12 +59,18 @@ export default function TutorPanel({ noteId }) {
         {mode === 'ask' ? (
           <span className="tutor-icon-btn" />
         ) : view === 'chat' ? (
-          <button type="button" className="tutor-icon-btn" onClick={() => setView('list')} title="대화 목록">☰</button>
+          <button type="button" className="tutor-icon-btn" onClick={() => setView('list')} title="대화 목록" aria-label="대화 목록">
+            <Menu size={16} aria-hidden="true" />
+          </button>
         ) : (
-          <button type="button" className="tutor-icon-btn" onClick={() => setView('chat')} title="뒤로">‹</button>
+          <button type="button" className="tutor-icon-btn" onClick={() => setView('chat')} title="뒤로" aria-label="뒤로">
+            <ChevronLeft size={18} aria-hidden="true" />
+          </button>
         )}
         <span className="title">{view === 'list' ? '대화 목록' : 'AI Tutor'}</span>
-        <button type="button" className="tutor-icon-btn" onClick={handleNew} title="새 대화">+</button>
+        <button type="button" className="tutor-icon-btn" onClick={handleNew} title="새 대화" aria-label="새 대화">
+          <Plus size={18} aria-hidden="true" />
+        </button>
       </div>
 
       {mode === 'ask' ? (
@@ -102,7 +109,8 @@ export default function TutorPanel({ noteId }) {
                 className="tutor-icon-btn conv-delete"
                 onClick={(e) => handleDelete(e, c.id)}
                 title="대화 삭제"
-              >×</button>
+                aria-label="대화 삭제"
+              ><X size={16} aria-hidden="true" /></button>
             </div>
           ))}
         </div>
@@ -135,7 +143,9 @@ export default function TutorPanel({ noteId }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
-              <button type="submit" disabled={isSending || isLoadingMessages || !input.trim()}>↑</button>
+              <button type="submit" disabled={isSending || isLoadingMessages || !input.trim()} aria-label="전송">
+                <ArrowUp size={18} aria-hidden="true" />
+              </button>
             </form>
           ) : (
             <div className="chat-readonly">

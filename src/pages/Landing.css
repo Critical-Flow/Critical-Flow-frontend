@@ -165,7 +165,9 @@ html.landing-snap {
 }
 
 .eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.6);
@@ -360,7 +362,7 @@ section.block {
   margin-bottom: 16px;
   font-size: 22px;
   background: linear-gradient(135deg, var(--green-2), var(--olive));
-  color: #fff;
+  color: var(--color-teal-600);
 }
 
 .feature h3 {
@@ -461,6 +463,7 @@ section.block {
   place-items: center;
   font-size: 22px;
   background: linear-gradient(135deg, var(--green-2), var(--olive));
+  color: var(--color-teal-600);
   margin-bottom: 14px;
 }
 
@@ -513,8 +516,10 @@ section.block {
 }
 
 .landing .carousel-icon-emoji {
+  display: flex;
   font-size: 19px;
   line-height: 1;
+  color: var(--color-teal-600);
 }
 
 .landing .feature-carousel .carousel-item-title {

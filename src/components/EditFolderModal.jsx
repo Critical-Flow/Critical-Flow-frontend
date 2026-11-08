@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import './EditFolderModal.css';
 
 export default function EditFolderModal({ folder, onSave, onClose }) {
@@ -23,7 +24,7 @@ export default function EditFolderModal({ folder, onSave, onClose }) {
       <div className="efm-modal" onClick={(e) => e.stopPropagation()}>
         <div className="mpm-header">
           <span>폴더 수정</span>
-          <button className="mpm-close" onClick={onClose}>✕</button>
+          <button className="mpm-close" onClick={onClose} aria-label="닫기"><X size={18} aria-hidden="true" /></button>
         </div>
         <div className="efm-body">
           <div className="efm-field">

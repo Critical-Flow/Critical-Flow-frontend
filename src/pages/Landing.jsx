@@ -1,5 +1,9 @@
 ﻿import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  NotebookPen, Bot, ChartColumn, Puzzle, ScanEye, Repeat,
+  GraduationCap, BookOpen, ArrowRight,
+} from 'lucide-react';
 import Footer from '../components/Footer';
 import TextType from '../components/reactbits/TextType';
 import VariableProximity from '../components/reactbits/VariableProximity';
@@ -20,17 +24,17 @@ const GitHubIcon = () => (
 
 const FEATURES = [
   {
-    icon: '📝',
+    Icon: NotebookPen,
     title: '마크다운 노트',
     description: '익숙한 마크다운 문법으로 빠르게 학습 내용을 정리하고, 디렉토리별로 체계적으로 관리하세요.'
   },
   {
-    icon: '🤖',
+    Icon: Bot,
     title: 'AI 퀴즈 & 피드백',
     description: '작성한 노트를 기반으로 AI가 자동으로 퀴즈를 생성하고, 약점을 분석해 맞춤형 피드백을 드립니다.'
   },
   {
-    icon: '📊',
+    Icon: ChartColumn,
     title: '학습 대시보드',
     description: '일간 · 주간 · 월간 학습 시간을 시각화하여 학습 습관을 확인하고 꾸준한 복습을 도와드립니다.'
   }
@@ -40,22 +44,22 @@ const CAROUSEL_ITEMS = FEATURES.map((feature, index) => ({
   id: index + 1,
   title: feature.title,
   description: feature.description,
-  icon: <span className="carousel-icon-emoji">{feature.icon}</span>
+  icon: <span className="carousel-icon-emoji"><feature.Icon size={19} aria-hidden="true" /></span>
 }));
 
 const ABOUT_SWAP_CARDS = [
   {
-    icon: '🧩',
+    Icon: Puzzle,
     title: '통합 학습 도구',
     description: '마크다운 노트, AI 퀴즈와 피드백, 학습 시간 통계 대시보드를 한 곳에서 제공합니다.'
   },
   {
-    icon: '📡',
+    Icon: ScanEye,
     title: '학습자 상태 인식',
     description: 'IoT 기기와 연동되는 학습자 상태 인식 기능으로 집중 상태를 파악합니다.'
   },
   {
-    icon: '🔁',
+    Icon: Repeat,
     title: '똑똑한 복습 사이클',
     description: '인식된 상태를 바탕으로 더 똑똑한 복습 사이클을 만들어 드립니다.'
   }
@@ -123,7 +127,7 @@ export default function Landing() {
         </div>
         <div className="hero-fade" aria-hidden="true" />
         <div className="hero-inner">
-          <div className="eyebrow">🎓 졸업 작품 프로젝트</div>
+          <div className="eyebrow"><GraduationCap size={15} aria-hidden="true" />졸업 작품 프로젝트</div>
           <h1>
             마크다운으로 기록하고,<br />
             <TextType
@@ -176,7 +180,7 @@ export default function Landing() {
               >
                 {ABOUT_SWAP_CARDS.map(card => (
                   <Card key={card.title} customClass="about-swap-card">
-                    <div className="swap-ico">{card.icon}</div>
+                    <div className="swap-ico"><card.Icon size={22} aria-hidden="true" /></div>
                     <h4>{card.title}</h4>
                     <p>{card.description}</p>
                   </Card>
@@ -213,7 +217,7 @@ export default function Landing() {
                 threshold={0.15}
               >
                 <GlareHover {...FEATURE_GLARE_PROPS}>
-                  <div className="ico">{feature.icon}</div>
+                  <div className="ico"><feature.Icon size={22} aria-hidden="true" /></div>
                   <h3>{feature.title}</h3>
                   <p>{feature.description}</p>
                 </GlareHover>
@@ -233,8 +237,9 @@ export default function Landing() {
           <div className="features-cta-wrap">
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a className="notion-link" href="#" target="_blank" rel="noopener noreferrer">
-              📘 자세한 활용법 보러가기 (Notion)
-              <span aria-hidden="true">→</span>
+              <BookOpen size={18} aria-hidden="true" />
+              자세한 활용법 보러가기 (Notion)
+              <ArrowRight size={16} aria-hidden="true" />
             </a>
           </div>
         </div>

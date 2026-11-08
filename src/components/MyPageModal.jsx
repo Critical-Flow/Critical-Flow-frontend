@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
 import { logoutApi, updateProfile, deleteAccount } from '../services/auth';
@@ -15,7 +16,7 @@ function UserInfoTab({ user, onProfileUpdated, onSessionExpired }) {
     setIsReembedding(true);
     try {
       await reembedNotes();
-      alert('✅ DB 복구가 완료되었습니다.');
+      alert('DB 복구가 완료되었습니다.');
     } catch {
       alert('복구에 실패했어요. 잠시 후 다시 시도해주세요.');
     } finally {
@@ -31,7 +32,7 @@ function UserInfoTab({ user, onProfileUpdated, onSessionExpired }) {
     try {
       const updated = await updateProfile({ affiliation });
       onProfileUpdated(updated);
-      alert('✅ 저장되었습니다.');
+      alert('저장되었습니다.');
     } catch (e) {
       if (e.response?.data?.code === 'USER_NOT_FOUND') {
         alert('사용자 정보를 찾을 수 없어요. 다시 로그인해주세요.');
@@ -96,7 +97,7 @@ function InquiryTab() {
       alert('문의 유형과 내용을 입력해 주세요.');
       return;
     }
-    alert('✅ 문의가 접수되었습니다.');
+    alert('문의가 접수되었습니다.');
     setInquiryType('');
     setContent('');
   };
@@ -192,7 +193,9 @@ export default function MyPageModal() {
         {/* 헤더 */}
         <div className="mpm-header">
           <span>마이페이지</span>
-          <button className="mpm-close" onClick={() => setMyPageOpen(false)}>✕</button>
+          <button className="mpm-close" onClick={() => setMyPageOpen(false)} aria-label="닫기">
+            <X size={18} aria-hidden="true" />
+          </button>
         </div>
 
         {/* 바디 */}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Ellipsis } from 'lucide-react';
 
 export default function FolderItem({ icon, name, active = false, onClick, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,10 +18,12 @@ export default function FolderItem({ icon, name, active = false, onClick, onEdit
       onClick={onClick}
       style={onClick ? { cursor: 'pointer' } : undefined}
     >
-      <span>{icon ? `${icon} ${name}` : name}</span>
+      <span className="folder-item-label">{icon}{name}</span>
       {(onEdit || onDelete) && (
         <div ref={menuRef} className="folder-menu" onClick={(e) => e.stopPropagation()}>
-          <button className="folder-menu-btn" onClick={() => setMenuOpen((v) => !v)}>⋯</button>
+          <button className="folder-menu-btn" onClick={() => setMenuOpen((v) => !v)} aria-label="폴더 메뉴">
+            <Ellipsis size={16} aria-hidden="true" />
+          </button>
           {menuOpen && (
             <div className="folder-dropdown">
               {onEdit && <button onClick={() => { onEdit(); setMenuOpen(false); }}>수정</button>}

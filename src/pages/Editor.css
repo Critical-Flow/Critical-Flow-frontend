@@ -35,6 +35,9 @@
 }
 
 .path .dir {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--color-teal-500);
   white-space: nowrap;
   flex-shrink: 0;
@@ -75,6 +78,9 @@
 }
 
 .back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 14px;
   color: var(--color-teal-500);
   font-weight: 600;
@@ -110,6 +116,9 @@
 }
 
 .toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
   padding: 6px 10px;
   border-radius: 4px;
@@ -242,6 +251,9 @@
 .rside.hidden { transform: translateX(100%); }
 
 .lside h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.6px;
@@ -550,6 +562,9 @@
 }
 
 .chat-input button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -596,6 +611,9 @@
 }
 
 .dock button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   border-radius: 50%;

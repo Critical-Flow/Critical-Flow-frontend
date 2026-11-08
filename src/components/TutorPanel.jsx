@@ -130,7 +130,14 @@ export default function TutorPanel({ noteId }) {
                     <span className="time">{formatTime(m.timestamp)}</span>
                   </div>
                 ))}
-                {isSending && <div className="bubble left">답변 작성 중…</div>}
+                {isSending && (
+                  <div className="bubble left typing" role="status">
+                    <span className="typing-dot" aria-hidden="true" />
+                    <span className="typing-dot" aria-hidden="true" />
+                    <span className="typing-dot" aria-hidden="true" />
+                    <span className="sr-only">답변 작성 중</span>
+                  </div>
+                )}
               </>
             )}
           </div>

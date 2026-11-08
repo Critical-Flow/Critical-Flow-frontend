@@ -151,6 +151,12 @@ export default function Dashboard() {
         <div className="charts">
           <div className="chart-card">
             <h3>최근 7일 학습 시간</h3>
+            {weekly.every((d) => d.study === 0) ? (
+              <div className="chart-empty">
+                <p>최근 7일 동안 학습 기록이 없어요.</p>
+                <p className="chart-empty-sub">에디터에서 학습 시작 버튼을 눌러 보세요.</p>
+              </div>
+            ) : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={weekly} barCategoryGap="30%" barGap={4}>
                 <defs>
@@ -179,6 +185,7 @@ export default function Dashboard() {
                 <Bar dataKey="focus" fill="url(#focusGradient)" radius={[6, 6, 0, 0]} activeBar={false} />
               </BarChart>
             </ResponsiveContainer>
+            )}
           </div>
 
           <div className="chart-card">

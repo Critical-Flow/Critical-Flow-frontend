@@ -18,6 +18,7 @@ const Directory = lazy(() => import('./pages/Directory'));
 const DirectoryEmpty = lazy(() => import('./pages/DirectoryEmpty'));
 const Editor = lazy(() => import('./pages/Editor'));
 const Create = lazy(() => import('./pages/Create'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // 경로가 바뀌면 key로 ErrorBoundary를 재마운트해, 이전 페이지의 에러 상태를
 // 새 페이지로 끌고 가지 않고 자동으로 회복한다.
@@ -37,6 +38,7 @@ function AppRoutes() {
           <Route path="/editor/:noteId" element={<Editor />} />
           <Route path="/create" element={<Create />} />
           <Route path="/create-empty" element={<Create isGuest />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </ErrorBoundary>

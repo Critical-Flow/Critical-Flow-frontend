@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Library, Folder, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
 import PageHeader from '../components/PageHeader';
@@ -61,8 +62,8 @@ export default function Directory() {
   const { data: categories, refetch: refetchFolders } = useFetch(getFolders, []);
 
   const allFolders = [
-    { categoryId: 0, title: '전체', icon: '📚' },
-    ...(categories ?? []).map((c) => ({ ...c, icon: '📁' })),
+    { categoryId: 0, title: '전체', icon: <Library size={16} aria-hidden="true" /> },
+    ...(categories ?? []).map((c) => ({ ...c, icon: <Folder size={16} aria-hidden="true" /> })),
   ];
 
   const getCategoryTitle = (categoryId) =>
@@ -141,13 +142,16 @@ export default function Directory() {
             <PageHeader title="내 노트" sub={`총 ${filtered.length}개의 노트`} />
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="🔍 노트 검색..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            />
+            <div className="search-box">
+              <Search className="search-icon" size={16} aria-hidden="true" />
+              <input
+                type="text"
+                className="search-input"
+                placeholder="노트 검색..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              />
+            </div>
             {activeCategoryId === 0 ? (
               <button
                 type="button"
@@ -202,7 +206,8 @@ export default function Directory() {
                       className="page-btn"
                       onClick={() => setPage((p) => p - 1)}
                       disabled={page === 1}
-                    >‹</button>
+                      aria-label="이전 페이지"
+                    ><ChevronLeft size={16} aria-hidden="true" /></button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                       <button
                         key={p}
@@ -214,7 +219,8 @@ export default function Directory() {
                       className="page-btn"
                       onClick={() => setPage((p) => p + 1)}
                       disabled={page === totalPages}
-                    >›</button>
+                      aria-label="다음 페이지"
+                    ><ChevronRight size={16} aria-hidden="true" /></button>
                   </div>
                 )}
               </>

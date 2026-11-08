@@ -1,3 +1,5 @@
+import { Save } from 'lucide-react';
+
 export default function EditorDock({
   lsideOpen,
   rsideOpen,
@@ -39,7 +41,7 @@ export default function EditorDock({
         <span className="tip">원본 마크다운 보기</span>
       </button>
       <button onClick={onSave} title={saveDisabledReason ?? '저장'} disabled={!!saveDisabledReason}>
-        <span className="dock-icon">💾</span>
+        <span className="dock-icon"><Save size={17} color="#fff" aria-hidden="true" /></span>
         <span className="tip">{saveDisabledReason ?? '저장 / 전송'}</span>
       </button>
       <button

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { Folder, FolderOpen, Files, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Editor.css';
 import MilkdownEditor from '../components/MilkdownEditor';
@@ -153,7 +154,7 @@ export default function Editor() {
       if (lsideOpen) lside.off();
       rside.on();
       setIsSaved(true);
-      setTimeout(() => alert('💾 저장되었습니다'), 150);
+      setTimeout(() => alert('저장되었습니다'), 150);
       if (isNew && saved?.noteId) {
         navigate(`/editor/${saved.noteId}`, { replace: true, state: { openRside: true } });
       }
@@ -242,13 +243,15 @@ export default function Editor() {
   }
 
   const noteFolder = folders?.find((f) => f.categoryId === note?.categoryId);
-  const folderLabel = noteFolder ? `📁 ${noteFolder.title}` : '📁';
 
   return (
     <div className={appClass}>
       <div className="topbar">
         <div className="path">
-          <span className="dir">{folderLabel}</span>
+          <span className="dir">
+            <Folder size={16} aria-hidden="true" />
+            {noteFolder?.title}
+          </span>
           <span className="sep">/</span>
           <input
             type="text"
@@ -266,13 +269,13 @@ export default function Editor() {
             if (hasUnsavedChanges && !window.confirm('저장하지 않은 내용이 있어요. 나가시겠어요?')) return;
             navigate('/directory');
           }}
-        >✕ 취소하고 돌아가기</button>
+        ><X size={16} aria-hidden="true" />취소하고 돌아가기</button>
       </div>
 
       <EditorToolbar onCommand={handleCommand} />
 
       <aside className={`lside${lsideOpen ? '' : ' hidden'}`}>
-        <h4>📂 디렉토리</h4>
+        <h4><FolderOpen size={14} aria-hidden="true" />디렉토리</h4>
         <ul>
           {(folders ?? []).map((f) => (
             <li
@@ -281,11 +284,11 @@ export default function Editor() {
               onClick={() => setSelectedCategoryId(f.categoryId)}
               style={{ cursor: 'pointer' }}
             >
-              📁 {f.title}
+              <Folder size={16} aria-hidden="true" />{f.title}
             </li>
           ))}
         </ul>
-        <h4 style={{ marginTop: '22px' }}>📄 파일</h4>
+        <h4 style={{ marginTop: '22px' }}><Files size={14} aria-hidden="true" />파일</h4>
         <ul>
           {(folderNotes ?? []).map((n) => (
             <li

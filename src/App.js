@@ -4,6 +4,7 @@ import { ModalProvider } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
 import MyPageModal from './components/MyPageModal';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 import Loading from './components/Loading';
 import Landing from './pages/Landing';
 import './styles/global.css';
@@ -28,16 +29,20 @@ function AppRoutes() {
     <ErrorBoundary key={location.pathname}>
       <Suspense fallback={<Loading fullPage />}>
         <Routes>
+          {/* 누구나 접근 가능 (게스트 둘러보기용 *-empty 포함) */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/oauth/callback" element={<OAuthCallback />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard-empty" element={<DashboardEmpty />} />
-          <Route path="/directory" element={<Directory />} />
           <Route path="/directory-empty" element={<DirectoryEmpty />} />
-          <Route path="/editor/:noteId" element={<Editor />} />
-          <Route path="/create" element={<Create />} />
           <Route path="/create-empty" element={<Create isGuest />} />
+
+          {/* 로그인 필요 — 비로그인 시 /login 으로 이동 */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/directory" element={<ProtectedRoute><Directory /></ProtectedRoute>} />
+          <Route path="/editor/:noteId" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
+          <Route path="/create" element={<ProtectedRoute><Create /></ProtectedRoute>} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

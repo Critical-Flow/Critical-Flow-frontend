@@ -21,6 +21,21 @@ body:has(.login-wrap) {
   text-align: center;
 }
 
+/* 보호된 페이지에서 이동해 왔을 때의 안내 */
+.login-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--color-teal-100);
+  color: var(--color-teal-600);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
 .login-logo-mark {
   width: 54px;
   height: 54px;

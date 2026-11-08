@@ -187,8 +187,9 @@ export default function MyPageModal() {
   };
 
   return (
-    <div className="mpm-overlay" onClick={() => setMyPageOpen(false)}>
-      <div className="mpm-modal" onClick={(e) => e.stopPropagation()}>
+    // 바깥(오버레이) 클릭으로는 닫지 않는다 — ✕ 버튼과 Esc 키로만 닫힌다.
+    <div className="mpm-overlay">
+      <div className="mpm-modal">
 
         {/* 헤더 */}
         <div className="mpm-header">

@@ -20,8 +20,9 @@ export default function EditFolderModal({ folder, onSave, onClose }) {
   };
 
   return (
-    <div className="mpm-overlay" onClick={onClose}>
-      <div className="efm-modal" onClick={(e) => e.stopPropagation()}>
+    // 바깥(오버레이) 클릭으로는 닫지 않는다 — ✕·취소 버튼으로만 닫힌다.
+    <div className="mpm-overlay">
+      <div className="efm-modal">
         <div className="mpm-header">
           <span>폴더 수정</span>
           <button className="mpm-close" onClick={onClose} aria-label="닫기"><X size={18} aria-hidden="true" /></button>

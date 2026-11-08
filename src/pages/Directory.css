@@ -359,6 +359,15 @@
   gap: 8px;
 }
 
+/* 노트 목록 빈 화면 — 공통 .empty-state 위에 목록 영역에 맞는 여백만 조정 */
+.notes-empty {
+  margin-bottom: 0;
+}
+
+.notes-empty h2 {
+  word-break: break-all;
+}
+
 @media (max-width: 1100px) {
   .notes-grid {
     grid-template-columns: repeat(3, 1fr);

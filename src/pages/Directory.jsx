@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Library, Folder, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Library, Folder, Search, ChevronLeft, ChevronRight, SearchX, FolderOpen, NotebookPen,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
 import PageHeader from '../components/PageHeader';
@@ -15,6 +17,39 @@ import { getNotes, getNotesByCategory, getFolders, deleteCategory, updateCategor
 import './Directory.css';
 
 const PAGE_SIZE = 12;
+
+// 노트가 하나도 보이지 않을 때의 안내. 검색 중 / 특정 폴더 / 전체 상황별로 문구를 나눈다.
+function NotesEmptyState({ searchTerm, categoryId }) {
+  if (searchTerm) {
+    return (
+      <div className="empty-state notes-empty">
+        <div className="empty-mascot"><SearchX size={36} aria-hidden="true" /></div>
+        <h2>'{searchTerm}'에 맞는 노트가 없어요</h2>
+        <p>다른 검색어로 다시 찾아보세요.</p>
+      </div>
+    );
+  }
+
+  if (categoryId !== 0) {
+    return (
+      <div className="empty-state notes-empty">
+        <div className="empty-mascot"><FolderOpen size={36} aria-hidden="true" /></div>
+        <h2>이 폴더에 노트가 없어요</h2>
+        <p>첫 노트를 작성해 학습 내용을 정리해 보세요.</p>
+        <Link to={`/editor/new?categoryId=${categoryId}`} className="btn-primary-link">+ 새 노트</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="empty-state notes-empty">
+      <div className="empty-mascot"><NotebookPen size={36} aria-hidden="true" /></div>
+      <h2>아직 작성한 노트가 없어요</h2>
+      <p>학습 생성에서 폴더를 만든 뒤 노트를 작성해 보세요.</p>
+      <Link to="/create" className="btn-primary-link">+ 학습 생성</Link>
+    </div>
+  );
+}
 
 export default function Directory() {
   const { user } = useAuth();
@@ -185,7 +220,13 @@ export default function Directory() {
             {notesError && !notesLoading && (
               <ErrorMessage message="노트를 불러오지 못했어요." onRetry={refetchNotes} />
             )}
-            {!notesLoading && !notesError && (
+            {!notesLoading && !notesError && filtered.length === 0 && (
+              <NotesEmptyState
+                searchTerm={debouncedSearch.trim()}
+                categoryId={activeCategoryId}
+              />
+            )}
+            {!notesLoading && !notesError && filtered.length > 0 && (
               <>
                 <div className="notes-grid">
                   {paginated.map((note) => (

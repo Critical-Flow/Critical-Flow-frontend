@@ -1,13 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Lock } from 'lucide-react';
 import './Login.css';
 
 const GITHUB_OAUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github`;
 
 export default function Login() {
+  const { state } = useLocation();
+  // 보호된 페이지(ProtectedRoute)에서 넘어온 경우에만 안내를 보여준다.
+  const authRequired = state?.reason === 'auth-required';
+
   return (
     <>
       <div className="login-wrap">
         <div className="login-card">
+          {authRequired && (
+            <div className="login-notice" role="status">
+              <Lock size={15} aria-hidden="true" />
+              로그인 후 이용할 수 있는 페이지예요
+            </div>
+          )}
           <div className="login-logo-mark">A</div>
           <h1>다시 오신 걸 환영해요</h1>
           <p>GitHub 계정으로 간편하게 시작하세요.</p>

@@ -5,7 +5,7 @@ import { formatTime, formatRelativeTime } from '../utils/date';
 // AI 튜터 채팅 패널. VSCode Copilot처럼 한 패널 안에서
 // '대화 화면(chat)'과 '대화 목록(list)'을 뷰 전환으로 오간다.
 // 가장 최신 대화(conversationId 최대값)만 메시지 입력 가능, 이전 대화는 이력 조회만.
-export default function TutorPanel({ noteId, hidden }) {
+export default function TutorPanel({ noteId }) {
   const {
     conversations,
     activeId,
@@ -53,7 +53,7 @@ export default function TutorPanel({ noteId, hidden }) {
   };
 
   return (
-    <section className="tutor-panel" aria-hidden={hidden}>
+    <section className="tutor-panel">
       <div className="tutor-head">
         {mode === 'ask' ? (
           <span className="tutor-icon-btn" />

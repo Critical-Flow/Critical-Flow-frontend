@@ -25,8 +25,3 @@ export async function getSessions() {
   const { data } = await api.get('/api/v1/sessions');
   return data;
 }
-
-export async function getActiveSession() {
-  const { data } = await api.get('/api/v1/sessions/active');
-  return data;
-}

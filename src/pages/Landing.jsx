@@ -239,7 +239,7 @@ export default function Landing() {
           </div>
           <div className="features-cta-wrap">
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="notion-link" href="#" target="_blank" rel="noopener noreferrer">
+            <a className="notion-link" href="https://app.notion.com/p/AICE-EDU-3ae7219a8b7480f0bfabec6ecb77feb5?source=copy_link" target="_blank" rel="noopener noreferrer">
               <BookOpen size={18} aria-hidden="true" />
               자세한 활용법 보러가기 (Notion)
               <ArrowRight size={16} aria-hidden="true" />

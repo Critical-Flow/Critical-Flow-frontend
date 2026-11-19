@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, SquarePen, NotebookText, CircleUser } from 'lucide-react';
+import Mascot from './Mascot';
 import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
@@ -21,7 +22,7 @@ export default function Sidebar({ isGuest = false }) {
   return (
     <aside className="sidebar">
       <Link className="brand" to={dashPath}>
-        <div className="s-logo">A</div>
+        <div className="s-logo"><Mascot size={28} /></div>
         <span>AICE</span>
       </Link>
       <nav>

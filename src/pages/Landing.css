@@ -57,17 +57,15 @@ html.landing-snap {
 }
 
 .logo .logo-mark {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--green-1), var(--olive));
+  width: auto;
+  height: auto;
+  background: none;
   display: grid;
   place-items: center;
   color: #fff;
   font-family: 'Inter', sans-serif;
   font-weight: 800;
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(59, 158, 133, 0.4);
 }
 
 .nav-menu {
@@ -322,6 +320,13 @@ section.block {
 /* 기능 */
 .features {
   background: var(--gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.features .container {
+  position: relative;
+  z-index: 1;
 }
 
 .features .container {

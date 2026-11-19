@@ -37,10 +37,10 @@ body:has(.login-wrap) {
 }
 
 .login-logo-mark {
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--color-teal-200), var(--color-teal-500));
+  /* teal 그라디언트 칩은 마스코트와 색이 겹쳐, 흰 카드 위에 마스코트만 세운다 */
+  width: auto;
+  height: auto;
+  background: none;
   display: grid;
   place-items: center;
   color: #fff;

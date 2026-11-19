@@ -5,6 +5,8 @@ import {
   GraduationCap, BookOpen, ArrowRight,
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import ForestBackground from '../components/ForestBackground';
+import Mascot from '../components/Mascot';
 import TextType from '../components/reactbits/TextType';
 import VariableProximity from '../components/reactbits/VariableProximity';
 import ScrollFloat from '../components/reactbits/ScrollFloat';
@@ -95,7 +97,7 @@ export default function Landing() {
       <nav className="nav">
         <div className="nav-inner">
           <div className="logo">
-            <div className="logo-mark">A</div>
+            <div className="logo-mark"><Mascot size={30} /></div>
             <span>AICE</span>
           </div>
           <div className="nav-menu">
@@ -192,6 +194,7 @@ export default function Landing() {
       </section>
 
       <section className="block features" id="features">
+        <ForestBackground height={200} />
         <div className="container">
           <div className="features-head" ref={featuresHeadRef}>
             <div className="tag">HOW TO USE</div>
@@ -236,7 +239,7 @@ export default function Landing() {
           </div>
           <div className="features-cta-wrap">
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="notion-link" href="#" target="_blank" rel="noopener noreferrer">
+            <a className="notion-link" href="https://app.notion.com/p/AICE-EDU-3ae7219a8b7480f0bfabec6ecb77feb5?source=copy_link" target="_blank" rel="noopener noreferrer">
               <BookOpen size={18} aria-hidden="true" />
               자세한 활용법 보러가기 (Notion)
               <ArrowRight size={16} aria-hidden="true" />

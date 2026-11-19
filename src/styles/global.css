@@ -147,6 +147,13 @@ select:focus {
   padding: 60px 20px;
   text-align: center;
   margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-state > *:not(svg) {
+  position: relative;
+  z-index: 1;
 }
 
 .empty-mascot {
@@ -159,6 +166,12 @@ select:focus {
   font-size: 36px;
   color: var(--color-teal-600);
   margin-bottom: 20px;
+}
+
+.empty-mascot--plain {
+  width: auto;
+  height: auto;
+  background: none;
 }
 
 .empty-state h2 {

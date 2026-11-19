@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Footer from '../components/Footer';
 import ForestBackground from '../components/ForestBackground';
+import Mascot from '../components/Mascot';
 import TextType from '../components/reactbits/TextType';
 import VariableProximity from '../components/reactbits/VariableProximity';
 import ScrollFloat from '../components/reactbits/ScrollFloat';
@@ -96,7 +97,7 @@ export default function Landing() {
       <nav className="nav">
         <div className="nav-inner">
           <div className="logo">
-            <div className="logo-mark">A</div>
+            <div className="logo-mark"><Mascot size={30} /></div>
             <span>AICE</span>
           </div>
           <div className="nav-menu">

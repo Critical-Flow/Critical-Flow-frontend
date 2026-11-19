@@ -322,6 +322,13 @@ section.block {
 /* 기능 */
 .features {
   background: var(--gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.features .container {
+  position: relative;
+  z-index: 1;
 }
 
 .features .container {

@@ -1,5 +1,6 @@
 import Sidebar from './Sidebar';
 import Footer from './Footer';
+import ForestBackground from './ForestBackground';
 import './AppLayout.css';
 
 export default function AppLayout({ children, isGuest = false }) {
@@ -7,7 +8,10 @@ export default function AppLayout({ children, isGuest = false }) {
     <div className="app-layout">
       <Sidebar isGuest={isGuest} />
       <main className="main-content">
-        {children}
+        <div className="main-body">
+          <ForestBackground height={180} />
+          {children}
+        </div>
         <Footer />
       </main>
     </div>

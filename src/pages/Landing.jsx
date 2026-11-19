@@ -5,6 +5,7 @@ import {
   GraduationCap, BookOpen, ArrowRight,
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import ForestBackground from '../components/ForestBackground';
 import TextType from '../components/reactbits/TextType';
 import VariableProximity from '../components/reactbits/VariableProximity';
 import ScrollFloat from '../components/reactbits/ScrollFloat';
@@ -192,6 +193,7 @@ export default function Landing() {
       </section>
 
       <section className="block features" id="features">
+        <ForestBackground height={200} />
         <div className="container">
           <div className="features-head" ref={featuresHeadRef}>
             <div className="tag">HOW TO USE</div>

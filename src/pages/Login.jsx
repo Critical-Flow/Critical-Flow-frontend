@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Lock } from 'lucide-react';
+import Mascot from '../components/Mascot';
 import './Login.css';
 
 const GITHUB_OAUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github`;
@@ -19,7 +20,7 @@ export default function Login() {
               로그인 후 이용할 수 있는 페이지예요
             </div>
           )}
-          <div className="login-logo-mark">A</div>
+          <div className="login-logo-mark"><Mascot size={64} /></div>
           <h1>다시 오신 걸 환영해요</h1>
           <p>GitHub 계정으로 간편하게 시작하세요.</p>
           <a href={GITHUB_OAUTH_URL} className="gh-btn">

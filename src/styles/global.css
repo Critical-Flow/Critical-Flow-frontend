@@ -161,6 +161,12 @@ select:focus {
   margin-bottom: 20px;
 }
 
+.empty-mascot--plain {
+  width: auto;
+  height: auto;
+  background: none;
+}
+
 .empty-state h2 {
   font-size: 20px;
   font-weight: 800;

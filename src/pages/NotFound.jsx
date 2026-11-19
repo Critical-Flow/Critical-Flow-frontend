@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Compass } from 'lucide-react';
+import Mascot from '../components/Mascot';
 import { useAuth } from '../context/AuthContext';
 
 // 등록되지 않은 모든 경로에서 보여주는 404 페이지.
@@ -20,7 +20,7 @@ export default function NotFound() {
       }}
     >
       <div className="empty-state" style={{ flex: 'none', width: '100%', maxWidth: '480px', marginBottom: 0 }}>
-        <div className="empty-mascot"><Compass size={36} aria-hidden="true" /></div>
+        <div className="empty-mascot empty-mascot--plain"><Mascot expression="question" size={88} /></div>
         <h2>페이지를 찾을 수 없어요</h2>
         <p>주소가 잘못되었거나 삭제된 페이지예요.</p>
         <Link to={homePath} className="btn-primary-link">{homeLabel}</Link>

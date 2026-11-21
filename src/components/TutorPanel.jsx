@@ -2,6 +2,35 @@ import { useState, useRef, useEffect } from 'react';
 import { Menu, ChevronLeft, Plus, X, ArrowUp } from 'lucide-react';
 import useTutorChat from '../hooks/useTutorChat';
 import { formatTime, formatRelativeTime } from '../utils/date';
+import Mascot from './Mascot';
+
+export function TutorEmpty() {
+  return (
+    <div className="chat-empty">
+      <span className="chat-empty-mascot" aria-hidden="true">
+        <Mascot expression="question" size={56} />
+      </span>
+      <p>노트 내용에 대해 무엇이든 물어보세요.</p>
+    </div>
+  );
+}
+
+// AI 답변 대기
+export function TutorTyping() {
+  return (
+    <div className="typing-row">
+      <span className="typing-mascot" aria-hidden="true">
+        <Mascot expression="focus" size={28} />
+      </span>
+      <div className="bubble left typing" role="status">
+        <span className="typing-dot" aria-hidden="true" />
+        <span className="typing-dot" aria-hidden="true" />
+        <span className="typing-dot" aria-hidden="true" />
+        <span className="sr-only">답변 작성 중</span>
+      </div>
+    </div>
+  );
+}
 
 // AI 튜터 채팅 패널. VSCode Copilot처럼 한 패널 안에서
 // '대화 화면(chat)'과 '대화 목록(list)'을 뷰 전환으로 오간다.
@@ -121,23 +150,14 @@ export default function TutorPanel({ noteId }) {
               <p className="chat-empty">대화 불러오는 중…</p>
             ) : (
               <>
-                {messages.length === 0 && !isSending && (
-                  <p className="chat-empty">노트 내용에 대해 무엇이든 물어보세요.</p>
-                )}
+                {messages.length === 0 && !isSending && <TutorEmpty />}
                 {messages.map((m) => (
                   <div key={m.id} className={`bubble ${m.role === 'user' ? 'right' : 'left'}`}>
                     {m.content}
                     <span className="time">{formatTime(m.timestamp)}</span>
                   </div>
                 ))}
-                {isSending && (
-                  <div className="bubble left typing" role="status">
-                    <span className="typing-dot" aria-hidden="true" />
-                    <span className="typing-dot" aria-hidden="true" />
-                    <span className="typing-dot" aria-hidden="true" />
-                    <span className="sr-only">답변 작성 중</span>
-                  </div>
-                )}
+                {isSending && <TutorTyping />}
               </>
             )}
           </div>

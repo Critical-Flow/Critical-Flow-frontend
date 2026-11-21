@@ -22,6 +22,17 @@
   background: #000;
 }
 
+.focus-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.focus-mascot {
+  display: flex;
+  line-height: 0;
+}
+
 .focus-badge {
   font-size: 12px;
   font-weight: 600;

@@ -436,9 +436,26 @@
 
 .chat-empty {
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   color: #9aa3a0;
   font-size: 13px;
   text-align: center;
+}
+
+.chat-empty-mascot,
+.typing-mascot {
+  display: flex;
+  line-height: 0;
+}
+
+.typing-row {
+  align-self: flex-start;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .bubble {
